@@ -1,0 +1,25 @@
+export interface DepensesPourMajBudgetViewDto {
+	codBud: any,
+	intitule: any,
+	dotInitiale: any,
+	caajout: any,
+	caannul: any,
+	ream: any,
+	totalEngag: any,
+	dotN1: any,
+	execN1: any,
+	dotN2: any,
+	execN2: any,
+	dotN3: any,
+	execN3: any,
+	gestion: any,
+	numNo: any,
+	idBudget: any,
+	idPlan: any,
+	ajoute: any,
+	annule: any,
+	dotationCorrigee: any,
+	dotationDefinitive: any,
+	disponible: any
+	nbreEngag: any
+}

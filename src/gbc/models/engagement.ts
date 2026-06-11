@@ -1,0 +1,127 @@
+export interface EngagementRequestDto {
+	dateCreation: any;
+	natDepense: any;
+	auProfit: any;
+	montant: any;
+	dotInitiale: any;
+	dispoAvant: any;
+	dateEtat: any;
+	idUser: any;
+	avecDecision: any;
+	apartirDemandLiq: any;
+	grh: any;
+	receptionne: any;
+	dateValid: any;
+	dateCreat: any;
+	codLiq: any;
+	codBord: any;
+	idContrat: any;
+	idEngParent: any;
+	etat: any;
+	idEtatTrans: any;
+	proced: any;
+	codBud: any;
+	idBudget: any;
+	idFourn: any;
+	gestion: any;
+}
+
+export const emptyEngagementRequestDto: EngagementRequestDto = {
+	dateCreation: null,
+	natDepense: null,
+	auProfit: null,
+	montant: null,
+	dotInitiale: null,
+	dispoAvant: null,
+	dateEtat: null,
+	idUser: null,
+	avecDecision: null,
+	apartirDemandLiq: null,
+	grh: null,
+	receptionne: null,
+	dateValid: null,
+	dateCreat: null,
+	codLiq: null,
+	codBord: null,
+	idContrat: null,
+	idEngParent: null,
+	etat: null,
+	idEtatTrans: null,
+	proced: null,
+	codBud: null,
+	idBudget: null,
+	idFourn: null,
+	gestion: null,
+}
+
+export interface EngagementResponseDto {
+	numBe: any;
+	benum: any;
+	dateCreation: any;
+	natDepense: any;
+	auProfit: any;
+	montant: any;
+	dotInitiale: any;
+	dispoAvant: any;
+	dateEtat: any;
+	idUser: any;
+	avecDecision: any;
+	apartirDemandLiq: any;
+	grh: any;
+	receptionne: any;
+	dateValid: any;
+	dateCreat: any;
+	codLiq: any;
+	codBord: any;
+	idContrat: any;
+	idEngParent: any;
+	etat: any;
+	idEtatTrans: any;
+	proced: any;
+	codBud: any;
+	idBudget: any;
+	idFourn: any;
+	gestion: any;
+	codBords: any;
+	numBesFils: any;
+	codLiqs: any;
+	idDecisions: any;
+	idPjengBrseZzs: any;
+	numMands: any;
+}
+
+export const emptyEngagementResponseDto: EngagementResponseDto = {
+	numBe: null,
+	benum: null,
+	dateCreation: null,
+	natDepense: null,
+	auProfit: null,
+	montant: null,
+	dotInitiale: null,
+	dispoAvant: null,
+	dateEtat: null,
+	idUser: null,
+	avecDecision: null,
+	apartirDemandLiq: null,
+	grh: null,
+	receptionne: null,
+	dateValid: null,
+	dateCreat: null,
+	codLiq: null,
+	codBord: null,
+	idContrat: null,
+	idEngParent: null,
+	etat: null,
+	idEtatTrans: null,
+	proced: null,
+	codBud: null,
+	idBudget: null,
+	idFourn: null,
+	gestion: null,
+	codBords: null,
+	numBesFils: null,
+	codLiqs: null,
+	idDecisions: null,
+	idPjengBrseZzs: null,
+	numMands: null,
+}

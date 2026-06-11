@@ -1,0 +1,25 @@
+import { Route, Routes } from "react-router-dom";
+import { GimInactiveProvider } from "./helpers/inactive-provider";
+import GimPrivatesRoutes from "./gim-privates-routes";
+import PageNotFound from "../pages/page-not-found";
+import GimLogin from "./pages/login";
+import Gim from "./pages/gim";
+
+
+const GimRoutes = () => {
+    return (
+        <GimInactiveProvider>
+            <Routes>
+                <Route path='login' element={<GimLogin />} />
+                <Route element={<GimPrivatesRoutes redirectPath='/gim/login' />} >
+                    <Route index element={<Gim />} />
+                    {/* Les autres routes sans grh*/}
+                </Route> 
+
+                <Route path="*" element={<PageNotFound />} />           
+            </Routes>
+        </GimInactiveProvider>
+    );
+};
+
+export default GimRoutes;

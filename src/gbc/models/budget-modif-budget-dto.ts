@@ -1,0 +1,23 @@
+export interface BudgetModifBudgetDto {
+	codBud: any,
+	intitule: any,
+	dotInitiale: any,
+	caajout: any,
+	caannul: any,
+	ream: any,
+	totalEngag: any,
+	dotN1: any,
+	execN1: any,
+	dotN2: any,
+	execN2: any,
+	dotN3: any,
+	execN3: any,
+	gestion: any,
+	numNo: any,
+	idBudget: any,
+	idPlan: any,
+	codBma: any,
+	ajoute: any,
+	annule: any,
+	nouvelle: any
+}

@@ -1,0 +1,11 @@
+.navbar-link {
+  background-color: gray;
+  border-radius: 15%;
+  margin-left: 1px;
+  margin-right: 1px;
+  font-size: 0.8em;
+}
+
+.navbar-link:hover {
+  border-radius: 50%;
+}
