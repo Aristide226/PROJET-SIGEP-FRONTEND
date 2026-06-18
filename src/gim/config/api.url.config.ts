@@ -6,4 +6,5 @@ export const API_URLS = {
     SOURCE_FINANCEMENT : BASE_URL + '/gim/sourceFinancement/',
     CODE_BUDG_TYPE : BASE_URL + '/gim/codeBudgType/',
     CODE_BUDGETAIRE : BASE_URL + '/gim/codeBudgetaire/',
+    PATRIMOINE_STATUT : BASE_URL + '/gim/patrimoineStatut/',
 }

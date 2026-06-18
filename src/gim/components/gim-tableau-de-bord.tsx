@@ -125,11 +125,11 @@ const GimTableauDeBord: React.FunctionComponent<IAppProps> = (props) => {
     ];
 
     // ─── États ───────────────────────────────────────────────────────────────────
-    const [gestionCourante]        = useState<string>(GimGestion() ?? '');
-    const [allSites,               setAllSites]               = useState<SitesResponseDto[]>([]);
-    const [allSourceFinancement,   setAllSourceFinancement]   = useState<any[]>([]);
-    const [allCodeBudgType,        setAllCodeBudgType]        = useState<any[]>([]);
-    const [allCodeBudgetaire,      setAllCodeBudgetaire]      = useState<any[]>([]);
+    const [gestionCourante] = useState<string>(GimGestion() ?? '');
+    const [allSites,setAllSites] = useState<SitesResponseDto[]>([]);
+    const [allSourceFinancement,setAllSourceFinancement] = useState<any[]>([]);
+    const [allCodeBudgType,setAllCodeBudgType] = useState<any[]>([]);
+    const [allCodeBudgetaire,setAllCodeBudgetaire] = useState<any[]>([]);
 
     // ─── Appels services ─────────────────────────────────────────────────────────
     const getAllSites = async () => {

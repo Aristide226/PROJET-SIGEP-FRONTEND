@@ -14,7 +14,7 @@ const GimV : FunctionComponent<IAppProps> =()=> {
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav>
                     <NavDropdown title="Paramètres" id="parametres" menuVariant="dark" className="navbar-link">
-                        <NavDropdown.Item>Paramètres systèmes</NavDropdown.Item>
+                        <NavDropdown.Item href="/gim/parametres-parametres-systemes">Paramètres systèmes</NavDropdown.Item>
                         <NavDropdown title="Saisie / Mise à jour" id="saisie-mise-a-jour" menuVariant="dark" drop='end' className="navbar-link">
                             <NavDropdown.Item href="#" className='navbar-link'>Fournisseurs ou Donateurs</NavDropdown.Item>
                             <NavDropdown.Item href="#" className='navbar-link'>Magasins ou entrepôts</NavDropdown.Item>

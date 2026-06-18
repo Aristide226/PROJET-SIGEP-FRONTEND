@@ -4,6 +4,7 @@ import GimPrivatesRoutes from "./gim-privates-routes";
 import PageNotFound from "../pages/page-not-found";
 import GimLogin from "./pages/login";
 import Gim from "./pages/gim";
+import ParametresParametresSystemes from "./pages/parametres-parametres-systemes";
 
 
 const GimRoutes = () => {
@@ -14,6 +15,7 @@ const GimRoutes = () => {
                 <Route element={<GimPrivatesRoutes redirectPath='/gim/login' />} >
                     <Route index element={<Gim />} />
                     {/* Les autres routes sans grh*/}
+                    <Route path="parametres-parametres-systemes" element= {<ParametresParametresSystemes/>}/>
                 </Route> 
 
                 <Route path="*" element={<PageNotFound />} />           
