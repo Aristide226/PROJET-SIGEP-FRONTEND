@@ -19,7 +19,7 @@ const ParametresParametresSystemesForm =()=> {
     //////////APPELS SERVICES FONCTIONS
    
     //////////FONCTIONS//////////
-    const handleImpression =async()=> {
+    const genererLeRapport =async()=> {
         try {
             const pdfBlob = await PatrimoineStatutService.statutBienReport();
             const url = window.URL.createObjectURL(pdfBlob);
@@ -47,6 +47,10 @@ const ParametresParametresSystemesForm =()=> {
         link.click();
     };
 
+    useEffect(() => {
+
+    },[])
+    
     return (
         <div style={{ width:'60%', margin:'0 auto'}} >
             <Tabs
@@ -66,13 +70,10 @@ const ParametresParametresSystemesForm =()=> {
                         <Button
                             variant="outline-primary"
                             title="Charger le rapport"
-                            onClick={handleImpression}
+                            onClick={genererLeRapport}
                             disabled={loading}
                         >
-                            {loading
-                                ? <><Spinner size="sm" className="me-1" animation={"border"} />Chargement...</>
-                                : <><PrintIcon fontSize="small" className="me-1" />Générer</>
-                            }
+                            <><PrintIcon fontSize="small" className="me-1" />Générer</>
                         </Button>
 
                         {pdfUrl && (
@@ -98,7 +99,7 @@ const ParametresParametresSystemesForm =()=> {
                         )}
                     </div>
 
-                    {/* Viewer PDF */}
+                    {/* vue PDF */}
                     {pdfUrl ? (
                         <iframe
                             id="pdf-frame"
@@ -115,7 +116,7 @@ const ParametresParametresSystemesForm =()=> {
                         <div
                             className="d-flex align-items-center justify-content-center text-muted"
                             style={{
-                                height: '600px',
+                                height: '500px',
                                 border: '1px dashed #dee2e6',
                                 borderRadius: '4px'
                             }}
