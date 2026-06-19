@@ -6,32 +6,32 @@ import { SourceFinancementRequestDto,SourceFinancementResponseDto } from "../mod
 export default class SourceFinancementService {
 
     static add(object: SourceFinancementRequestDto) : Promise<SourceFinancementResponseDto> {
-        return axios.post(API_URLS.SOURCE_FINANCEMENT + 'add', object)
+        return axios.post(API_URLS.SOURCE_FINANCEMENT_URL + 'add', object)
         .then(response => response.data)
     }
 
      static getAll(): Promise<SourceFinancementResponseDto[]> {
-        return axios.get(API_URLS.SOURCE_FINANCEMENT + 'getAll')
+        return axios.get(API_URLS.SOURCE_FINANCEMENT_URL + 'getAll')
         .then( response => response.data);
     }
 
     static get(id: number): Promise<SourceFinancementResponseDto> {
-        return axios.get(API_URLS.SOURCE_FINANCEMENT + 'get/' + id)
+        return axios.get(API_URLS.SOURCE_FINANCEMENT_URL + 'get/' + id)
         .then( response => response.data);
     }
 
     static delete(id: number): Promise<{}> {
-        return axios.delete(API_URLS.SOURCE_FINANCEMENT + 'delete/' + id)
+        return axios.delete(API_URLS.SOURCE_FINANCEMENT_URL + 'delete/' + id)
         .then( response => response.data);
     }
 
     static edit(id: number, object: SourceFinancementRequestDto): Promise<SourceFinancementResponseDto> {
-        return axios.put(API_URLS.SOURCE_FINANCEMENT + 'edit/' + id, object)
+        return axios.put(API_URLS.SOURCE_FINANCEMENT_URL + 'edit/' + id, object)
         .then( response => response.data);
     }
 
     static getFinancementStatistiqueParCategorie(): Promise<[]> {
-        return axios.get(API_URLS.SOURCE_FINANCEMENT + 'stat')
+        return axios.get(API_URLS.SOURCE_FINANCEMENT_URL + 'stat')
         .then(response => response.data)
     }
 

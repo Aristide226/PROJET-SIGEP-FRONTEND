@@ -6,32 +6,32 @@ import { API_URLS } from "../config/api.url.config";
 export default class PatrimoineStatutService {
 
     static add(object: PatrimoineStatutRequestDto) : Promise<PatrimoineStatutResponseDto> {
-        return axios.post(API_URLS.PATRIMOINE_STATUT + 'add', object)
+        return axios.post(API_URLS.PATRIMOINE_STATUT_URL + 'add', object)
         .then(response => response.data)
     }
 
      static getAll(): Promise<PatrimoineStatutResponseDto[]> {
-        return axios.get(API_URLS.PATRIMOINE_STATUT + 'getAll')
+        return axios.get(API_URLS.PATRIMOINE_STATUT_URL + 'getAll')
         .then( response => response.data);
     }
 
     static get(id: string): Promise<PatrimoineStatutResponseDto> {
-        return axios.get(API_URLS.PATRIMOINE_STATUT + 'get/' + id)
+        return axios.get(API_URLS.PATRIMOINE_STATUT_URL + 'get/' + id)
         .then( response => response.data);
     }
 
     static delete(id: string): Promise<{}> {
-        return axios.delete(API_URLS.PATRIMOINE_STATUT + 'delete/' + id)
+        return axios.delete(API_URLS.PATRIMOINE_STATUT_URL + 'delete/' + id)
         .then( response => response.data);
     }
 
     static edit(id: string, object: PatrimoineStatutRequestDto): Promise<PatrimoineStatutResponseDto> {
-        return axios.put(API_URLS.PATRIMOINE_STATUT + 'edit/' + id, object)
+        return axios.put(API_URLS.PATRIMOINE_STATUT_URL + 'edit/' + id, object)
         .then( response => response.data);
     }
 
     static statutBienReport() : Promise<Blob> {
-        return axios.get(API_URLS.PATRIMOINE_STATUT + 'statutBienReport',
+        return axios.get(API_URLS.PATRIMOINE_STATUT_URL + 'statutBienReport',
             {
                 responseType : 'blob'
             }

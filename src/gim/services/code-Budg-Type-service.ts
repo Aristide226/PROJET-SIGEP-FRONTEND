@@ -5,32 +5,32 @@ import { CodeBudgTypeRequestDto, CodeBudgTypeResponseDto } from "../models/code-
 
 export default class CodeBudgTypeService {
     static add(object: CodeBudgTypeRequestDto) : Promise<CodeBudgTypeResponseDto> {
-        return axios.post(API_URLS.CODE_BUDG_TYPE + 'add', object)
+        return axios.post(API_URLS.CODE_BUDG_TYPE_URL + 'add', object)
         .then(response => response.data)
     }
 
      static getAll(): Promise<CodeBudgTypeResponseDto[]> {
-        return axios.get(API_URLS.CODE_BUDG_TYPE + 'getAll')
+        return axios.get(API_URLS.CODE_BUDG_TYPE_URL + 'getAll')
         .then( response => response.data);
     }
 
     static get(id: number): Promise<CodeBudgTypeResponseDto> {
-        return axios.get(API_URLS.CODE_BUDG_TYPE + 'get/' + id)
+        return axios.get(API_URLS.CODE_BUDG_TYPE_URL + 'get/' + id)
         .then( response => response.data);
     }
 
     static delete(id: number): Promise<{}> {
-        return axios.delete(API_URLS.CODE_BUDG_TYPE + 'delete/' + id)
+        return axios.delete(API_URLS.CODE_BUDG_TYPE_URL + 'delete/' + id)
         .then( response => response.data);
     }
 
     static edit(id: number, object: CodeBudgTypeRequestDto): Promise<CodeBudgTypeResponseDto> {
-        return axios.put(API_URLS.CODE_BUDG_TYPE + 'edit/' + id, object)
+        return axios.put(API_URLS.CODE_BUDG_TYPE_URL + 'edit/' + id, object)
         .then( response => response.data);
     }
 
     static getTypeBienStatistiqueDto(): Promise<[]> {
-        return axios.get(API_URLS.CODE_BUDG_TYPE + 'stat')
+        return axios.get(API_URLS.CODE_BUDG_TYPE_URL + 'stat')
         .then(response => response.data)
     }
 

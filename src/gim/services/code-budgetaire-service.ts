@@ -5,32 +5,32 @@ import { CodeBudgetaireRequestDto,CodeBudgetaireResponseDto } from "../models/co
 
 export default class CodeBudgetaireService {
     static add(object: CodeBudgetaireRequestDto) : Promise<CodeBudgetaireResponseDto> {
-        return axios.post(API_URLS.CODE_BUDGETAIRE + 'add', object)
+        return axios.post(API_URLS.CODE_BUDGETAIRE_URL + 'add', object)
         .then(response => response.data)
     }
 
      static getAll(): Promise<CodeBudgetaireResponseDto[]> {
-        return axios.get(API_URLS.CODE_BUDGETAIRE + 'getAll')
+        return axios.get(API_URLS.CODE_BUDGETAIRE_URL + 'getAll')
         .then( response => response.data);
     }
 
     static get(id: number): Promise<CodeBudgetaireResponseDto> {
-        return axios.get(API_URLS.CODE_BUDGETAIRE + 'get/' + id)
+        return axios.get(API_URLS.CODE_BUDGETAIRE_URL + 'get/' + id)
         .then( response => response.data);
     }
 
     static delete(id: number): Promise<{}> {
-        return axios.delete(API_URLS.CODE_BUDGETAIRE + 'delete/' + id)
+        return axios.delete(API_URLS.CODE_BUDGETAIRE_URL + 'delete/' + id)
         .then( response => response.data);
     }
 
     static edit(id: number, object: CodeBudgetaireRequestDto): Promise<CodeBudgetaireResponseDto> {
-        return axios.put(API_URLS.CODE_BUDGETAIRE + 'edit/' + id, object)
+        return axios.put(API_URLS.CODE_BUDGETAIRE_URL + 'edit/' + id, object)
         .then( response => response.data);
     }
 
     static getCodeBudgetaireStatistiqueDto(): Promise<[]> {
-        return axios.get(API_URLS.CODE_BUDGETAIRE + 'stat')
+        return axios.get(API_URLS.CODE_BUDGETAIRE_URL + 'stat')
         .then(response => response.data)
     }
 
