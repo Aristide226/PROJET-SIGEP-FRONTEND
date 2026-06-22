@@ -171,7 +171,7 @@ const ParametresSaisieMiseAjourFournisseursOuDonateursForm = () => {
                 setValeursEdition(emptyFournisseursResponsetDto);
             });
         } catch(error) {
-            console.log(error)
+            
         }
         
     };

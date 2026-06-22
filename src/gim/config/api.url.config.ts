@@ -12,4 +12,5 @@ export const API_URLS = {
     CATEGORIE_BIEN_URL : BASE_URL + '/gim/categorieBien/',
     FOURNISSEURS_URL : BASE_URL + '/gim/fournisseurs/',
     FOURNISSEUR_TYPE_URL : BASE_URL + '/gim/fournisseurType/',
+    MAGASIN_ENTREPOT_URL : BASE_URL + '/gim/magasinEntrepot/',
 }
