@@ -10,4 +10,6 @@ export const API_URLS = {
     TYP_FICHE_URL : BASE_URL + '/gim/typFiche/',
     ETAT_FICHE_URL : BASE_URL + '/gim/etatFiche/',
     CATEGORIE_BIEN_URL : BASE_URL + '/gim/categorieBien/',
+    FOURNISSEURS_URL : BASE_URL + '/gim/fournisseurs/',
+    FOURNISSEUR_TYPE_URL : BASE_URL + '/gim/fournisseurType/',
 }

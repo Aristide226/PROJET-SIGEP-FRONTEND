@@ -16,7 +16,7 @@ const GimV : FunctionComponent<IAppProps> =()=> {
                     <NavDropdown title="Paramètres" id="parametres" menuVariant="dark" className="navbar-link">
                         <NavDropdown.Item href="/gim/parametres-parametres-systemes">Paramètres systèmes</NavDropdown.Item>
                         <NavDropdown title="Saisie / Mise à jour" id="saisie-mise-a-jour" menuVariant="dark" drop='end' className="navbar-link">
-                            <NavDropdown.Item href="#" className='navbar-link'>Fournisseurs ou Donateurs</NavDropdown.Item>
+                            <NavDropdown.Item href="/gim/parametres-saisie-mise-a-jour-fournisseurs-ou-donateurs" className='navbar-link'>Fournisseurs ou Donateurs</NavDropdown.Item>
                             <NavDropdown.Item href="#" className='navbar-link'>Magasins ou entrepôts</NavDropdown.Item>
                             <NavDropdown.Item href="#" className='navbar-link'>Nomenclature Budgétaire</NavDropdown.Item>
                             <NavDropdown.Item href="#" className='navbar-link'>Paramètres généraux</NavDropdown.Item>

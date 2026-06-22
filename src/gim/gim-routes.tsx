@@ -5,6 +5,7 @@ import PageNotFound from "../pages/page-not-found";
 import GimLogin from "./pages/login";
 import Gim from "./pages/gim";
 import ParametresParametresSystemes from "./pages/parametres-parametres-systemes";
+import ParametresSaisieMiseAjourFournisseursOuDonateurs from "./pages/parametres-saisie-mise-a-jour-fournisseurs-ou-donateurs";
 
 
 const GimRoutes = () => {
@@ -16,6 +17,7 @@ const GimRoutes = () => {
                     <Route index element={<Gim />} />
                     {/* Les autres routes sans grh*/}
                     <Route path="parametres-parametres-systemes" element= {<ParametresParametresSystemes/>}/>
+                    <Route path="parametres-saisie-mise-a-jour-fournisseurs-ou-donateurs" element={<ParametresSaisieMiseAjourFournisseursOuDonateurs/>}/>
                 </Route> 
 
                 <Route path="*" element={<PageNotFound />} />           
