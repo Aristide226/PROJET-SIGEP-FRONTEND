@@ -13,6 +13,10 @@ import DataTable from "react-data-table-component";
 import { fontSize, minHeight, style } from "@mui/system";
 import { emptyPiecesResponseDto, PiecesResponseDto } from "../models/pieces";
 import PiecesService from "../services/pieces-service";
+import { emptyTypeAcquisitionResponseDto, TypeAcquisitionResponseDto } from "../models/type-acquisition";
+import TypeAcquisitionService from "../services/type-acquisition-service";
+import { emptySourceFinancementResponseDto, SourceFinancementResponseDto } from "../models/source-financement";
+import SourceFinancementService from "../services/source-financement-service";
 
 const ParametresSaisieMiseAjourParametresGenereauxForm =()=> {
 
@@ -274,6 +278,311 @@ const ParametresSaisieMiseAjourParametresGenereauxForm =()=> {
         }
     ]
     //////////FIN GESTION PIECES JUSTIFICATIVES//////////
+
+    //////////GESTION TYPE ACQUISITION//////////
+    const [allTypeAcquisition,setAllTypeAcquisition] = useState<TypeAcquisitionResponseDto[]>([]);
+    const [ligneSelectionneeTypeAcquisition,setLigneSelectionneeTypeAcquisition] = useState<TypeAcquisitionResponseDto>(emptyTypeAcquisitionResponseDto);
+    const [enModeAjoutTypeAcquisition,setEnModeAjoutTypeAcquisition] = useState<boolean>(false);
+    const [nouveauLibelleTypeAcquisition,setNouveauLibelleTypeAcquisition] = useState<string>('');
+    const ID_NOUVELLE_LIGNE_TypeAcquisition = 'NOUVELLE_LIGNE_TypeAcquisition';
+    const [idEnEditionTypeAcquisition,setIdEnEditionTypeAcquisition] = useState<any>(null);
+    const [libelleEditionTypeAcquisition,setLibelleEditionTypeAcquisition] = useState<string>('');
+
+    const getAllTypeAcquisition =async()=> {
+        await TypeAcquisitionService.getAll()
+        .then((data) => {
+            setAllTypeAcquisition(data)
+        })
+    }
+
+    const handleAjouterTypeAcquisition =()=> {
+        setNouveauLibelleTypeAcquisition('');
+        setEnModeAjoutTypeAcquisition(true);
+        setLigneSelectionneeTypeAcquisition(emptyTypeAcquisitionResponseDto);
+    }
+
+    const handleEnregistrerTypeAcquisition =async()=> {
+        if(enModeAjoutTypeAcquisition) {
+            if(nouveauLibelleTypeAcquisition.trim() === '') return;
+
+            await TypeAcquisitionService.add({ libTypeAcq : nouveauLibelleTypeAcquisition, exigerEngagement : false} as any)
+            .then(() => {
+                okSuccessDialog("Ajouté avec succès");
+                setEnModeAjoutTypeAcquisition(false);
+                setNouveauLibelleTypeAcquisition('');
+                getAllTypeAcquisition();
+            });
+            return;
+        }
+        if(idEnEditionTypeAcquisition !==null) {
+            if(libelleEditionTypeAcquisition.trim()=== '') return;
+            await TypeAcquisitionService.edit(
+                idEnEditionTypeAcquisition, 
+                {libTypeAcq : libelleEditionTypeAcquisition, exigerEngagement : false} as any
+            )
+            .then(()=> {
+                okSuccessDialog("Données enrégistrées avec succès");
+                setIdEnEditionTypeAcquisition(null);
+                setLibelleEditionTypeAcquisition('');
+                getAllTypeAcquisition();
+            })
+        }
+        return;
+    }
+    const handleSupprimerTypeAcquisition = async () => {
+        if (!ligneSelectionneeTypeAcquisition || ligneSelectionneeTypeAcquisition.idTypeAcq === null) return;
+        Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Vous ne pourrez plus revenir en arrière",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor : "#3085d6",
+            cancelButtonColor : "#d33",
+            confirmButtonText : "Oui, supprimer",
+            cancelButtonText: "Annuler"
+        }).then(async(result) => {
+            if(result.isConfirmed) {
+                await TypeAcquisitionService.delete(ligneSelectionneeTypeAcquisition.idTypeAcq)
+                .then(() => {
+                    setLigneSelectionneeTypeAcquisition(emptyTypeAcquisitionResponseDto);
+                    getAllTypeAcquisition();
+                });
+            }
+        })  
+    };
+    const handleAnnulerAjoutTypeAcquisition =()=> {
+        setEnModeAjoutTypeAcquisition(false);
+        setNouveauLibelleTypeAcquisition('');
+    }
+
+    const annulerEditionTypeAcquisition =()=> {
+        setIdEnEditionTypeAcquisition(null);
+    }
+    const donneesAfficheesTypeAcquisition = enModeAjoutTypeAcquisition ? [...allTypeAcquisition, {idTypeAcq : ID_NOUVELLE_LIGNE_TypeAcquisition, libTypeAcq : ''}] : allTypeAcquisition;
+
+    const typeAcquisitionColumn = [
+        {
+            name : "ID",
+            width : '10%',
+            selector : (row : any) => row.idTypeAcq,
+            cell : (row:any) => (
+                row.idTypeAcq === ID_NOUVELLE_LIGNE_TypeAcquisition ? '' : row.idTypeAcq
+            ),
+        },
+        {
+            name : "Libellé",
+            grow: 2,
+            selector : (row:any) => row.libTypeAcq,
+            cell : (row : any) => {
+                if(row.idTypeAcq === ID_NOUVELLE_LIGNE_TypeAcquisition) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={nouveauLibelleTypeAcquisition}
+                            onChange={(e) => setNouveauLibelleTypeAcquisition(e.target.value)}
+                        />
+                    )
+                }
+                if(idEnEditionTypeAcquisition === row.idTypeAcq) {
+                    return (
+                        <div className="d-flex align-items-center gap-2" style={{ width: '100%' }}>
+                            <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={libelleEditionTypeAcquisition}
+                            onChange={(e) => setLibelleEditionTypeAcquisition(e.target.value)}
+                            />
+                            <Button size="sm" variant="secondary" onClick={annulerEditionTypeAcquisition}>✕</Button>
+                        </div>
+                        
+                        
+                    )
+                }
+                return (
+                    <span
+                        style={{
+                            cursor: enModeAjoutTypeAcquisition ? 'not-allowed' : 'text',
+                            opacity: enModeAjoutTypeAcquisition ? 0.5 : 1,
+                            width : '100%',
+                            display : 'block'
+                        }}
+                    >
+                        {row.libTypeAcq}
+                    </span>
+                )
+            }
+        }
+    ]
+    const conditionalRowStylesTypeAcquisition = [
+        {
+            when : (row :any) => row.idTypeAcq === ligneSelectionneeTypeAcquisition.idTypeAcq,
+            style: {
+                backgroundColor : 'blue',
+                color :'white',
+                '&:hover' : {
+                    cursor: 'pointer'
+                }
+            } 
+        }
+    ]
+    //////////FIN GESTION TYPE ACQUISITION//////////
+
+    //////////GESTION SOURCE FINANCEMENT//////////
+    const [allSourceFinancement,setAllSourceFinancement] = useState<SourceFinancementResponseDto[]>([]);
+    const [ligneSelectionneeSourceFinancement,setLigneSelectionneeSourceFinancement] = useState<SourceFinancementResponseDto>(emptySourceFinancementResponseDto);
+    const [enModeAjoutSourceFinancement,setEnModeAjoutSourceFinancement] = useState<boolean>(false);
+    const [nouveauCodeSourceFinancement,setNouveauCodeSourceFinancement] = useState<string>('');
+    const [nouveauLibelleSourceFinancement,setNouveauLibelleSourceFinancement] = useState<string>('');
+    const ID_NOUVELLE_LIGNE_SourceFinancement = 'NOUVELLE_LIGNE_SourceFinancement';
+    const [idEnEditionSourceFinancement,setIdEnEditionSourceFinancement] = useState<any>(null);
+    const [libelleEditionSourceFinancement,setLibelleEditionSourceFinancement] = useState<string>('');
+
+    const getAllSourceFinancement =async()=> {
+        await SourceFinancementService.getAll()
+        .then((data) => {
+            setAllSourceFinancement(data)
+        })
+    }
+
+    const handleAjouterSourceFinancement =()=> {
+        setNouveauCodeSourceFinancement('');
+        setNouveauLibelleSourceFinancement('');
+        setEnModeAjoutSourceFinancement(true);
+        setLigneSelectionneeSourceFinancement(emptySourceFinancementResponseDto);
+    }
+
+    const handleEnregistrerSourceFinancement =async()=> {
+        if(enModeAjoutSourceFinancement) {
+            if(nouveauLibelleSourceFinancement.trim() === '') return;
+
+            await SourceFinancementService.add({ 
+                codSourceFin : nouveauLibelleTypeAcquisition,
+                libSourceFin : false,
+                abrevSourceFin : '' } as any)
+            .then(() => {
+                okSuccessDialog("Ajouté avec succès");
+                setEnModeAjoutSourceFinancement(false);
+                setNouveauLibelleSourceFinancement('');
+                getAllSourceFinancement();
+            });
+            return;
+        }
+        if(idEnEditionSourceFinancement !==null) {
+            if(libelleEditionSourceFinancement.trim()=== '') return;
+            await SourceFinancementService.edit(
+                idEnEditionSourceFinancement, 
+                {libTypeAcq : libelleEditionSourceFinancement, exigerEngagement : false} as any
+            )
+            .then(()=> {
+                okSuccessDialog("Données enrégistrées avec succès");
+                setIdEnEditionSourceFinancement(null);
+                setLibelleEditionSourceFinancement('');
+                getAllSourceFinancement();
+            })
+        }
+        return;
+    }
+    const handleSupprimerSourceFinancement = async () => {
+        if (!ligneSelectionneeSourceFinancement || ligneSelectionneeSourceFinancement.codSourceFin === null) return;
+        Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Vous ne pourrez plus revenir en arrière",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor : "#3085d6",
+            cancelButtonColor : "#d33",
+            confirmButtonText : "Oui, supprimer",
+            cancelButtonText: "Annuler"
+        }).then(async(result) => {
+            if(result.isConfirmed) {
+                await SourceFinancementService.delete(ligneSelectionneeSourceFinancement.codSourceFin)
+                .then(() => {
+                    setLigneSelectionneeSourceFinancement(emptySourceFinancementResponseDto);
+                    getAllSourceFinancement();
+                });
+            }
+        })  
+    };
+    const handleAnnulerAjoutSourceFinancement =()=> {
+        setEnModeAjoutSourceFinancement(false);
+        setNouveauLibelleSourceFinancement('');
+    }
+
+    const annulerEditionSourceFinancement =()=> {
+        setIdEnEditionSourceFinancement(null);
+    }
+    const donneesAfficheesSourceFinancement = enModeAjoutSourceFinancement ? [...allSourceFinancement, {codSourceFin : ID_NOUVELLE_LIGNE_SourceFinancement, libSourceFin : ''}] : allSourceFinancement;
+
+    const sourceFinancementColumn = [
+        {
+            name : "Code",
+            width : '10%',
+            selector : (row : any) => row.codSourceFin,
+            cell : (row:any) => (
+                row.codSourceFin === ID_NOUVELLE_LIGNE_SourceFinancement ? '' : row.codSourceFin
+            )
+        },
+        {
+            name : "Libellé",
+            grow: 2,
+            selector : (row:any) => row.libSourceFin,
+            cell : (row : any) => {
+                if(row.codSourceFin === ID_NOUVELLE_LIGNE_SourceFinancement) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={nouveauLibelleSourceFinancement}
+                            onChange={(e) => setNouveauLibelleSourceFinancement(e.target.value)}
+                        />
+                    )
+                }
+                if(idEnEditionSourceFinancement === row.codSourceFin) {
+                    return (
+                        <div className="d-flex align-items-center gap-2" style={{ width: '100%' }}>
+                            <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={libelleEditionSourceFinancement}
+                            onChange={(e) => setLibelleEditionSourceFinancement(e.target.value)}
+                            />
+                            <Button size="sm" variant="secondary" onClick={annulerEditionSourceFinancement}>✕</Button>
+                        </div>
+                    )
+                }
+                return (
+                    <span
+                        style={{
+                            cursor: enModeAjoutSourceFinancement ? 'not-allowed' : 'text',
+                            opacity: enModeAjoutSourceFinancement ? 0.5 : 1,
+                            width : '100%',
+                            display : 'block'
+                        }}
+                    >
+                        {row.libSourceFin}
+                    </span>
+                )
+            }
+        }
+    ]
+    const conditionalRowStylesSourceFinancement = [
+        {
+            when : (row :any) => row.codSourceFin === ligneSelectionneeSourceFinancement.codSourceFin,
+            style: {
+                backgroundColor : 'blue',
+                color :'white',
+                '&:hover' : {
+                    cursor: 'pointer'
+                }
+            } 
+        }
+    ]
+    //////////FIN GESTION SOURCE FINANCEMENT//////////
     const customStyles = {
         headRow: {
             style : {
@@ -306,6 +615,8 @@ const ParametresSaisieMiseAjourParametresGenereauxForm =()=> {
     useEffect(() => {
         getAllEtatBiens()
         getAllPieces()
+        getAllTypeAcquisition()
+        getAllSourceFinancement()
     },[])
 
     return (
@@ -417,44 +728,104 @@ const ParametresSaisieMiseAjourParametresGenereauxForm =()=> {
                         <Button
                             variant="outline-success"
                             title="Ajouter"
+                            onClick={handleAjouterTypeAcquisition}
+                            disabled={enModeAjoutTypeAcquisition || idEnEditionTypeAcquisition !== null}
                         >
                             <AddIcon/>
                         </Button>
                         <Button
-                            variant="outline-danger"
-                            title="Supprimer"
-                        >
-                           <DeleteIcon/> 
-                        </Button>
-                        <Button
                             variant="outline-primary"
                             title="Enregistrer les données"
+                            className="ms-2"
+                            disabled={!enModeAjoutTypeAcquisition && idEnEditionTypeAcquisition == null}
+                            onClick={handleEnregistrerTypeAcquisition}
                         >
                             <SaveIcon/>
                         </Button>
+                        <Button
+                            variant="outline-danger"
+                            title="Supprimer"
+                            className="ms-2"
+                            disabled={!ligneSelectionneeTypeAcquisition.idTypeAcq}
+                            onClick={handleSupprimerTypeAcquisition}
+                        >
+                           <DeleteIcon/> 
+                        </Button>
+
+                        {enModeAjoutTypeAcquisition && (
+                            <Button variant="link" className="ms-2 text-muted" onClick={handleAnnulerAjoutTypeAcquisition}><strong>Annuler</strong></Button>
+                        )}
                     </div>
+                    <DataTable
+                        columns={typeAcquisitionColumn}
+                        data={donneesAfficheesTypeAcquisition}
+                        striped
+                        highlightOnHover
+                        pointerOnHover
+                        customStyles={customStyles}
+                        conditionalRowStyles={conditionalRowStylesTypeAcquisition}
+                        fixedHeader
+                        fixedHeaderScrollHeight="400px"
+                        noDataComponent="Aucune donnée"
+                        onRowClicked={(row:any) => {
+                            if(enModeAjoutTypeAcquisition) return;
+                            setLigneSelectionneeTypeAcquisition(row);
+                            setIdEnEditionTypeAcquisition(row.idTypeAcq);
+                            setLibelleEditionTypeAcquisition(row.libTypeAcq);
+                        }}
+                    />
                 </Tab>
                 <Tab eventKey="sourceDeFinancement" title="Source de financement">
                     <div className="d-flex align-items-center justify-content-end gap-2 my-2">
                         <Button
                             variant="outline-success"
                             title="Ajouter"
+                            onClick={handleAjouterSourceFinancement}
+                            disabled={enModeAjoutSourceFinancement || idEnEditionSourceFinancement !== null}
                         >
                             <AddIcon/>
                         </Button>
                         <Button
-                            variant="outline-danger"
-                            title="Supprimer"
-                        >
-                           <DeleteIcon/> 
-                        </Button>
-                        <Button
                             variant="outline-primary"
                             title="Enregistrer les données"
+                            className="ms-2"
+                            disabled={!enModeAjoutSourceFinancement && idEnEditionSourceFinancement == null}
+                            onClick={handleEnregistrerSourceFinancement}
                         >
                             <SaveIcon/>
                         </Button>
+                        <Button
+                            variant="outline-danger"
+                            title="Supprimer"
+                            className="ms-2"
+                            disabled={!ligneSelectionneeSourceFinancement.codSourceFin}
+                            onClick={handleSupprimerSourceFinancement}
+                        >
+                           <DeleteIcon/> 
+                        </Button>
+
+                        {enModeAjoutSourceFinancement && (
+                            <Button variant="link" className="ms-2 text-muted" onClick={handleAnnulerAjoutSourceFinancement}><strong>Annuler</strong></Button>
+                        )}
                     </div>
+                    <DataTable
+                        columns={sourceFinancementColumn}
+                        data={donneesAfficheesSourceFinancement}
+                        striped
+                        highlightOnHover
+                        pointerOnHover
+                        customStyles={customStyles}
+                        conditionalRowStyles={conditionalRowStylesSourceFinancement}
+                        fixedHeader
+                        fixedHeaderScrollHeight="400px"
+                        noDataComponent="Aucune donnée"
+                        onRowClicked={(row:any) => {
+                            if(enModeAjoutSourceFinancement) return;
+                            setLigneSelectionneeSourceFinancement(row);
+                            setIdEnEditionSourceFinancement(row.codSourceFin);
+                            setLibelleEditionSourceFinancement(row.libSourceFin);
+                        }}
+                    />
                 </Tab>
             </Tabs>
         </div>
