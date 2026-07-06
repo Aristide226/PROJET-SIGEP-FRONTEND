@@ -10,7 +10,6 @@ import { okSuccessDialog } from "../../helpers/dialogs";
 import { emptyEtatBienResponseDto, EtatBienResponseDto } from "../models/etat-bien";
 import EtatBienService from "../services/etat-bien-service";
 import DataTable from "react-data-table-component";
-import { fontSize, minHeight, style } from "@mui/system";
 import { emptyPiecesResponseDto, PiecesResponseDto } from "../models/pieces";
 import PiecesService from "../services/pieces-service";
 import { emptyTypeAcquisitionResponseDto, TypeAcquisitionResponseDto } from "../models/type-acquisition";
@@ -456,25 +455,30 @@ const ParametresSaisieMiseAjourParametresGenereauxForm =()=> {
 
     const handleEnregistrerSourceFinancement =async()=> {
         if(enModeAjoutSourceFinancement) {
-            if(nouveauLibelleSourceFinancement.trim() === '') return;
+            if(nouveauCodeSourceFinancement.trim() === '' || nouveauLibelleSourceFinancement.trim() === '') return;
 
             await SourceFinancementService.add({ 
-                codSourceFin : nouveauLibelleTypeAcquisition,
-                libSourceFin : false,
+                codSourceFin : nouveauCodeSourceFinancement,
+                libSourceFin : nouveauLibelleSourceFinancement,
                 abrevSourceFin : '' } as any)
             .then(() => {
                 okSuccessDialog("Ajouté avec succès");
                 setEnModeAjoutSourceFinancement(false);
+                setNouveauCodeSourceFinancement('')
                 setNouveauLibelleSourceFinancement('');
                 getAllSourceFinancement();
             });
             return;
         }
         if(idEnEditionSourceFinancement !==null) {
-            if(libelleEditionSourceFinancement.trim()=== '') return;
+            if(libelleEditionSourceFinancement.trim() === '') return;
             await SourceFinancementService.edit(
                 idEnEditionSourceFinancement, 
-                {libTypeAcq : libelleEditionSourceFinancement, exigerEngagement : false} as any
+                {
+                    codSourceFin : idEnEditionSourceFinancement,
+                    libSourceFin : libelleEditionSourceFinancement,
+                    abrevSourceFin : ''
+                } as any
             )
             .then(()=> {
                 okSuccessDialog("Données enrégistrées avec succès");
@@ -521,9 +525,24 @@ const ParametresSaisieMiseAjourParametresGenereauxForm =()=> {
             name : "Code",
             width : '10%',
             selector : (row : any) => row.codSourceFin,
-            cell : (row:any) => (
-                row.codSourceFin === ID_NOUVELLE_LIGNE_SourceFinancement ? '' : row.codSourceFin
-            )
+            cell : (row:any) => {
+                if(row.codSourceFin === ID_NOUVELLE_LIGNE_SourceFinancement) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={nouveauCodeSourceFinancement}
+                            onChange={(e) => setNouveauCodeSourceFinancement(e.target.value)}
+                        />
+                    );
+                }
+                return (
+                    <span style={{ opacity: enModeAjoutSourceFinancement ? 0.5 : 1}}>
+                        {row.codSourceFin}
+                    </span>
+                )
+            }
         },
         {
             name : "Libellé",

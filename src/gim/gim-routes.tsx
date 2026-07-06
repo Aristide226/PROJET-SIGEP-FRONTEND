@@ -8,6 +8,7 @@ import ParametresParametresSystemes from "./pages/parametres-parametres-systemes
 import ParametresSaisieMiseAjourFournisseursOuDonateurs from "./pages/parametres-saisie-mise-a-jour-fournisseurs-ou-donateurs";
 import ParametresSaisieMiseAjourMagasinsOuEntrepots from "./pages/parametres-saisie-mise-a-jour-magasins-ou-entrepots";
 import ParametresSaisieMiseAjourParametresGenereaux from "./pages/parametres-saisie-mise-a-jour-parametres-genereaux";
+import ParametresSaisieMiseAjourNomenclatureBudgetaire from "./pages/parametres-saisie-mise-a-jour-nomenclature-budgetaire";
 
 
 const GimRoutes = () => {
@@ -22,6 +23,7 @@ const GimRoutes = () => {
                     <Route path="parametres-saisie-mise-a-jour-fournisseurs-ou-donateurs" element={<ParametresSaisieMiseAjourFournisseursOuDonateurs/>}/>
                     <Route path="paremetres-saisie-mise-a-jour-magasins-ou-entrepots" element={<ParametresSaisieMiseAjourMagasinsOuEntrepots/>}/>
                     <Route path="paremetres-saisie-mise-a-jour-parametres-genereaux" element={<ParametresSaisieMiseAjourParametresGenereaux/>}/>
+                    <Route path="paremetres-saisie-mise-a-jour-nomenclature-budgetaire" element={<ParametresSaisieMiseAjourNomenclatureBudgetaire/>}/>
                 </Route> 
 
                 <Route path="*" element={<PageNotFound />} />           

@@ -16,4 +16,5 @@ export const API_URLS = {
     ETAT_BIEN_URL : BASE_URL + '/gim/etatBien/', 
     PIECES_URL : BASE_URL + '/gim/pieces/',
     TYPE_ACQUISITION_URL : BASE_URL + '/gim/typeAcquisition/',
+    CODE_MATERIEL_URL : BASE_URL + '/gim/codeMateriel/',
 }
