@@ -29,6 +29,11 @@ export default class CodeMaterielService {
         .then( response => response.data);
     }
 
+    static getMaxNumByCodBud(codBud: number) {
+        return axios.get(API_URLS.CODE_MATERIEL_URL + 'maxNumByCodBud/' + codBud)
+        .then(response => response.data)
+    }
+
     static isEmpty(data: Object): boolean {
         return Object.keys(data).length === 0;
     }

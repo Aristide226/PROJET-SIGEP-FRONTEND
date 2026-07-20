@@ -15,6 +15,8 @@ import { CodeMaterielResponseDto } from "../models/code-materiel";
 import CodeMaterielService from "../services/code-materiel-service";
 import { okSuccessDialog, okWarnignDialog } from "../../helpers/dialogs";
 import Swal from "sweetalert2";
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
 
 const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
 
@@ -34,6 +36,13 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
     const ID_NOUVELLE_LIGNE_CODE_BUDGETAIRE = 'NOUVELLE_LIGNE_CODE_BUDGETAIRE';
     const[idEnEditionCodeBudgetaire,setIdEnEditionCodeBudgetaire] = useState<any>(null);
     const[intituleEnEditionCodeBudgetaire,setIntituleEnEditionCodeBudgetaire] = useState<string>('');
+    const[sectionCibleePourAjout, setSectionCibleePourAjout] = useState<'codeBudgetaire'| 'codeMateriel'>('codeBudgetaire');
+
+    const[enModeAjoutCodeMateriel, setEnModeAjoutCodeMateriel] = useState<boolean>(false);
+    const[nouveauCodeMaterielId, setNouveauCodeMaterielId] = useState<string>('');
+    const[nouveauIntituleMateriel, setNouveauIntituleMateriel] = useState<string>('');
+    const[nouvelleDureeVieAn, setNouvelleDureeVieAn] = useState<number>(2);
+    const ID_NOUVELLE_LIGNE_CODE_MATERIEL = 'NOUVELLE_LIGNE_CODE_MATERIEL';
 
     //////////APPELS SERVICES//////////
     const getAllCodeBudgetaires =async()=> {
@@ -52,7 +61,7 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
         await CodeMaterielService.getAll()
         .then((data) => {
             setAllCodeMateriels(data)
-            console.table(data);
+            // console.table(data);
         })
     }
     //////////FONCTIONS//////////
@@ -81,7 +90,44 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
         return resultat;
     },[allCodeMateriels,ligneDeCodeBudgetaireSelectionnee])
 
-    const handleAjouterCodeBudgetaire =()=> {
+    const donneesFinalaAfficherPourCodeMateriel =useMemo(() => {
+        if(enModeAjoutCodeMateriel) {
+            return [
+                {
+                    codMat : ID_NOUVELLE_LIGNE_CODE_MATERIEL,
+                    intituleMateriel : '',
+                    dureeVieAn : nouvelleDureeVieAn,
+                    codBud : ligneDeCodeBudgetaireSelectionnee.codBud
+                },
+                ...filtrerEnFonctionDeCodBud
+            ]
+        }
+        return filtrerEnFonctionDeCodBud;
+    }, [enModeAjoutCodeMateriel,filtrerEnFonctionDeCodBud,nouvelleDureeVieAn,ligneDeCodeBudgetaireSelectionnee]);
+
+    const handleAjouterCodeMateriel = async()=> {
+        if(sectionCibleePourAjout === 'codeMateriel') {
+            if(!ligneDeCodeBudgetaireSelectionnee.codBud) {
+                okWarnignDialog("Veuillez sélectionner d'abord une ligne budgétaire");
+                return;
+            }
+            const codBud = ligneDeCodeBudgetaireSelectionnee.codBud;
+            await CodeMaterielService.getMaxNumByCodBud(codBud)
+            .then((maxNum: number) => {
+                const prochainNum = (maxNum ?? 0) +1;
+                const numFormate = String(prochainNum).padStart(2, '0');
+                setNouveauCodeMaterielId(`${codBud}.${numFormate}`);
+            })
+            .catch(() => {
+                okWarnignDialog("Erreur lors de la génération du code")
+            })
+            
+            setNouveauIntituleMateriel('');
+            setNouvelleDureeVieAn(2);
+            setEnModeAjoutCodeMateriel(true);
+        }
+    }
+    const handleAjouterCodeBudgetaire =async()=> {
         if(!typeCodeTypSelectionne){
             okWarnignDialog("Veuillez choisir d'abord le type de bien");
             return;
@@ -129,6 +175,33 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
         }
         return;
     }
+    const handleEnregistrerCodeMateriel = async () => {
+        if(nouveauIntituleMateriel.trim() === '') return;
+        const maxNum : number = await CodeMaterielService.getMaxNumByCodBud(ligneDeCodeBudgetaireSelectionnee.codBud); 
+        await CodeMaterielService.add({
+            codMat: nouveauCodeMaterielId,
+            num: Number(maxNum +1),
+            intituleMateriel: nouveauIntituleMateriel,
+            dureeVieAn: nouvelleDureeVieAn,
+            art: '',
+            codBud: ligneDeCodeBudgetaireSelectionnee.codBud
+        })
+        .then(() => {
+            okSuccessDialog("Ajouter avec succès");
+            setEnModeAjoutCodeMateriel(false);
+            setNouveauCodeMaterielId('');
+            setNouveauIntituleMateriel('');
+            setNouvelleDureeVieAn(2);
+            getAllCodeMateriel()
+        })
+        .catch(() => okWarnignDialog("Erreur lors de l'enregistrement"))
+    }
+    const handleEnregistrer =async()=> {
+        if(enModeAjoutCodeMateriel) {
+            return handleEnregistrerCodeMateriel();
+        }
+        return handleEnregistrerCodeBudgetaire();
+    }
     const handleSupprimerCodeBudgetaire =async () => {
         if(!ligneDeCodeBudgetaireSelectionnee || ligneDeCodeBudgetaireSelectionnee.codBud === null) return;
         Swal.fire({
@@ -159,6 +232,13 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
     const annulerEditionCodeBudgetaire =()=> {
         setIdEnEditionCodeBudgetaire(null);
         setIdEnEditionCodeBudgetaire('');
+        console.log(idEnEditionCodeBudgetaire)
+    }
+    const handleAnnulerAjoutCodeMateriel =()=> {
+        setEnModeAjoutCodeMateriel(false)
+        setNouveauCodeMaterielId('')
+        setNouveauIntituleMateriel('')
+        setNouvelleDureeVieAn(2)
     }
     //////////GESTION DU DROPDOWN DU CODTYPE//////////
     const handleSelectionCodTyp = (codTyp: number, intituleTyp: string) => {
@@ -237,24 +317,61 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
         },
         {
             name: 'Actif',
-            selector: (row:any) => row.codBudActif
+            selector: (row:any) => row.codBudActif,
+            cell : (row : any) => (
+                row.codBudActif ? <CheckBoxOutlinedIcon/> : <CheckBoxOutlineBlankOutlinedIcon/>
+            )
         }
     ]
-
+    
     const codeMaterielColumn = [
         {
             name: 'Code Bud',
-            selector: (row:any) => row.codMat
+            selector: (row:any) => row.codMat,
+            cell: (row:any) => {
+                if(row.codMat === ID_NOUVELLE_LIGNE_CODE_MATERIEL) {
+                    return <span className="text-muted">{nouveauCodeMaterielId || ''}</span>
+                }
+                return <span>{row.codMat}</span>
+            }
         },
         {
             name: 'Intitulé',
             grow: 6,
-            selector: (row:any) => row.intituleMateriel
+            selector: (row:any) => row.intituleMateriel,
+            cell: (row:any) => {
+                if(row.codMat === ID_NOUVELLE_LIGNE_CODE_MATERIEL) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={nouveauIntituleMateriel}
+                            onChange={(e) => setNouveauIntituleMateriel(e.target.value)}
+                        />
+                    );
+                }
+                return <span>{row.intituleMateriel}</span>
+            }
         },
         {
             name: 'Durée de vie',
             grow: 2,
-            selector: (row:any) => row.dureeVieAn
+            selector: (row:any) => row.dureeVieAn,
+            cell: (row:any) => {
+                if(row.codMat === ID_NOUVELLE_LIGNE_CODE_MATERIEL) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="number"
+                            min={1}
+                            value={nouvelleDureeVieAn}
+                            onChange={(e) => setNouvelleDureeVieAn(Number(e.target.value))}
+                        />
+                    );
+                }
+                return <span>{row.dureeVieAn}</span>
+            }
         },
     ]
     const conditionalRowStylesCodeBudgetaire = [
@@ -314,8 +431,11 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                                 variant="success"
                                 className="me-2"
                                 title="Ajouter"
-                                onClick={handleAjouterCodeBudgetaire}
-                                disabled={enModeAjoutCodeBudgetaire || idEnEditionCodeBudgetaire !== null}
+                                onClick={sectionCibleePourAjout==='codeBudgetaire' ? handleAjouterCodeBudgetaire : handleAjouterCodeMateriel}
+                                // disabled={
+                                //     sectionCibleePourAjout === 'codeBudgetaire' ?
+                                //     (idEnEditionCodeBudgetaire !== null) : (ligneDeCodeBudgetaireSelectionnee.codBud || enModeAjoutCodeMateriel)
+                                // }
                             >
                                 <AddIcon/>
                             </Button>
@@ -332,8 +452,8 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                                 variant="primary"
                                 className="me-2"
                                 title="Enregistrer les données"
-                                onClick={handleEnregistrerCodeBudgetaire}
-                                disabled={!enModeAjoutCodeBudgetaire && idEnEditionCodeBudgetaire==null}
+                                onClick={handleEnregistrer}
+                                disabled={!enModeAjoutCodeBudgetaire && !enModeAjoutCodeMateriel && idEnEditionCodeBudgetaire==null}
                             >
                                 <SaveSharpIcon/>
                             </Button>
@@ -346,6 +466,9 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                             </Button>
                             {enModeAjoutCodeBudgetaire && (
                                 <Button variant="link" className="ms-2 text-muted" onClick={handleAnnulerAjoutCodeBudgetaire}><strong>Annuler</strong></Button>
+                            )}
+                            {enModeAjoutCodeMateriel && (
+                                <Button variant="link" className="ms-2 text-muted" onClick={handleAnnulerAjoutCodeMateriel}><strong>Annuler</strong></Button>
                             )}
                         </Col>
                     </Row>
@@ -391,23 +514,40 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                                 setLigneDeCodeBudgetaireSelectionnee(data);
                                 setIdEnEditionCodeBudgetaire(data.codBud);
                                 setIntituleEnEditionCodeBudgetaire(data.intituleCodBud);
+                                setSectionCibleePourAjout('codeBudgetaire');
                             }}
                             onRowDoubleClicked={() => {
                                 setLigneDeCodeBudgetaireSelectionnee(emptyCodeBudgetaireResponseDto)
+                                setIdEnEditionCodeBudgetaire(null)
+                                setIntituleEnEditionCodeBudgetaire("")
                             }}
                         />
-                        <span><b>Rubrique budgétaire</b></span>
-                        <DataTable
-                            columns={codeMaterielColumn}
-                            data={filtrerEnFonctionDeCodBud}
-                            striped
-                            dense
-                            highlightOnHover
-                            pointerOnHover
-                            fixedHeader
-                            fixedHeaderScrollHeight="200px"
-                            noDataComponent="Aucune donnée"
-                        />
+                        <div
+                            onClick={() => {
+                                if(!ligneDeCodeBudgetaireSelectionnee.codBud) {
+                                    okWarnignDialog("Veuillez sélectionner d'abord une ligne budgétaire");
+                                    return;
+                                }
+                                setSectionCibleePourAjout('codeMateriel')
+                            }}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <span><b>Rubrique budgétaire</b></span>
+                            <DataTable
+                                columns={codeMaterielColumn}
+                                data={donneesFinalaAfficherPourCodeMateriel}
+                                striped
+                                dense
+                                highlightOnHover
+                                pointerOnHover
+                                fixedHeader
+                                fixedHeaderScrollHeight="200px"
+                                noDataComponent="Aucune donnée"
+                                onRowClicked={() => {
+                                    setSectionCibleePourAjout('codeMateriel')
+                                }}
+                            />
+                        </div>
                     </div>
                 </Card.Body>
                 <Card.Footer>
