@@ -39,6 +39,13 @@ const ParametresSaisieMiseAjourFournisseursOuDonateursForm = () => {
 	    bpfourn : {value : ""},
 	    typF : {value : ""},
     })
+    const emptyForm: FournisseursForm = {
+        fournisseur: { value: "" },
+        numIfu: { value: "" },
+        telFourn: { value: "" },
+        bpfourn: { value: "" },
+        typF: { value: "" },
+    };
 
     // Type sélectionné dans le dropdown 
     const [typeSelectionne, setTypeSelectionne] = useState<string>('');
@@ -133,7 +140,7 @@ const ParametresSaisieMiseAjourFournisseursOuDonateursForm = () => {
         setShowAjouterUnFournisseur(false);
     }
 
-    const ajouterUnFournisseur =async(e : React.SyntheticEvent<HTMLFormElement>) => {
+    const ajouterUnFournisseur =async(e:any) => {
         e.preventDefault();
         
         try {
@@ -148,7 +155,8 @@ const ParametresSaisieMiseAjourFournisseursOuDonateursForm = () => {
             await FournisseursService.add(newFournisseur)
             .then(() => {
                 okSuccessDialog("Fournisseur ajouté avec succès");
-                setFournisseurForm(emptyFournisseursRequestDto);
+                setFournisseurForm(emptyForm);
+                getAllFournisseurs();
             })
         } catch(error) {
 
@@ -391,7 +399,7 @@ const ParametresSaisieMiseAjourFournisseursOuDonateursForm = () => {
                         <Modal.Title as="h6">Mise à jour liste des fournisseurs/donnateurs</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="bg-light px-5 py-4">
-                    <Form onSubmit={(e) => ajouterUnFournisseur(e)}>
+                    <Form>
                         <Form.Group as={Row} className="mb-3" controlId="fournisseur">
                             <Form.Label column sm={2} className="text-primary fst-italic">Nom :</Form.Label>
                             <Col sm={10}>
@@ -420,12 +428,12 @@ const ParametresSaisieMiseAjourFournisseursOuDonateursForm = () => {
                             </Col>
                         </Form.Group>
                         
-                        <Card.Footer className="bg-light justify-content-center gap-3 py-3">
-                            <Button variant="outline-primary" size="lg">
+                        <Card.Footer className="bg-light justify-content-end gap-3 py-3">
+                            {/* <Button variant="outline-primary" size="lg" onClick={handleShowModalAjouterUnFournisseur}>
                                 <i className="bi bi-plus-circle-fill text-success me-2"></i>
                                 Nouveau
-                            </Button>
-                            <Button type="submit" variant="outline-secondary" size="lg">
+                            </Button> */}
+                            <Button variant="outline-secondary" size="lg" onClick={ajouterUnFournisseur}>
                                 <i className="bi bi-save-fill me-2"></i>
                                 Enregistrer
                             </Button>
