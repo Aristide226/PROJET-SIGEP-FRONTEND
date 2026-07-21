@@ -44,6 +44,11 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
     const[nouvelleDureeVieAn, setNouvelleDureeVieAn] = useState<number>(2);
     const ID_NOUVELLE_LIGNE_CODE_MATERIEL = 'NOUVELLE_LIGNE_CODE_MATERIEL';
 
+    const[ligneDeCodeMaterielSelectionnee, setLigneDeCodeMaterielSelectionnee] = useState<CodeMaterielResponseDto|null>(null);
+    const[idEnEditionCodeMateriel, setIdEnEditionCodeMateriel] = useState<any>(null);
+    const[intituleEnEditionCodeMateriel, setIntituleEnEditionCodeMateriel] = useState<string>('');
+    const[dureeVieEnEditionCodeMateriel, setDureeVieEnEditionCodeMateriel] = useState<number>(2);
+
     //////////APPELS SERVICES//////////
     const getAllCodeBudgetaires =async()=> {
         await CodeBudgetaireService.getAll()
@@ -60,8 +65,7 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
     const getAllCodeMateriel =async()=> {
         await CodeMaterielService.getAll()
         .then((data) => {
-            setAllCodeMateriels(data)
-            // console.table(data);
+            setAllCodeMateriels(data);
         })
     }
     //////////FONCTIONS//////////
@@ -106,6 +110,10 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
     }, [enModeAjoutCodeMateriel,filtrerEnFonctionDeCodBud,nouvelleDureeVieAn,ligneDeCodeBudgetaireSelectionnee]);
 
     const handleAjouterCodeMateriel = async()=> {
+        if(!typeCodeTypSelectionne){
+            okWarnignDialog("Veuillez choisir d'abord le type de bien");
+            return;
+        }
         if(sectionCibleePourAjout === 'codeMateriel') {
             if(!ligneDeCodeBudgetaireSelectionnee.codBud) {
                 okWarnignDialog("Veuillez sélectionner d'abord une ligne budgétaire");
@@ -196,9 +204,35 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
         })
         .catch(() => okWarnignDialog("Erreur lors de l'enregistrement"))
     }
+    const handleModifierCodeMateriel =async()=> {
+        if(intituleEnEditionCodeMateriel.trim() === '') return;
+        const maxNum : number = await CodeMaterielService.getMaxNumByCodBud(ligneDeCodeBudgetaireSelectionnee.codBud); 
+        await CodeMaterielService.edit(
+            idEnEditionCodeMateriel,
+            {
+                codMat : idEnEditionCodeMateriel,
+                num: Number(maxNum +1),
+                intituleMateriel: intituleEnEditionCodeMateriel,
+                dureeVieAn: dureeVieEnEditionCodeMateriel,
+                art: '',
+                codBud: ligneDeCodeBudgetaireSelectionnee.codBud
+            }
+        )
+        .then(() => {
+            okSuccessDialog("Données enrégistrées avec succès");
+            setIdEnEditionCodeMateriel(null);
+            setIntituleEnEditionCodeMateriel('');
+            setDureeVieEnEditionCodeMateriel(2);
+            getAllCodeMateriel();
+        })
+        .catch(() => okWarnignDialog("Erreur lors de l'enregistrement"));
+    }
     const handleEnregistrer =async()=> {
         if(enModeAjoutCodeMateriel) {
             return handleEnregistrerCodeMateriel();
+        }
+        if(idEnEditionCodeMateriel != null) {
+            return handleModifierCodeMateriel();
         }
         return handleEnregistrerCodeBudgetaire();
     }
@@ -225,6 +259,36 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
             }
         })
     }
+    const handleSupprimerCodeMateriel =async()=> {
+        if(!ligneDeCodeMaterielSelectionnee || !ligneDeCodeMaterielSelectionnee.codMat) return;
+        Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Vous ne pourrez plus revenir en arrière",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Oui, supprimer",
+            cancelButtonText: "Annuler"
+        }).then(async(result) => {
+            if(result.isConfirmed) {
+                await CodeMaterielService.delete(ligneDeCodeMaterielSelectionnee.codMat)
+                .then(() => {
+                    setLigneDeCodeMaterielSelectionnee(null);
+                    setIdEnEditionCodeMateriel(null);
+                    setIntituleEnEditionCodeMateriel('');
+                    getAllCodeMateriel();
+                })
+                .catch(() => okWarnignDialog("Erreur lors de la suppression"))
+            }
+        })
+    }
+    const handleSupprimer =async()=> {
+        if(sectionCibleePourAjout === 'codeMateriel') {
+            return handleSupprimerCodeMateriel();
+        }
+        return handleSupprimerCodeBudgetaire();
+    }
     const handleAnnulerAjoutCodeBudgetaire =()=> {
         setEnModeAjoutCodeBudgetaire(false);
         setNouveauIntituleCodeBudgetaire('');
@@ -239,6 +303,11 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
         setNouveauCodeMaterielId('')
         setNouveauIntituleMateriel('')
         setNouvelleDureeVieAn(2)
+    }
+    const annulerEditionCodeMateriel =()=> {
+        setIdEnEditionCodeMateriel(null);
+        setIntituleEnEditionCodeMateriel('');
+        setDureeVieEnEditionCodeMateriel(2)
     }
     //////////GESTION DU DROPDOWN DU CODTYPE//////////
     const handleSelectionCodTyp = (codTyp: number, intituleTyp: string) => {
@@ -351,6 +420,20 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                         />
                     );
                 }
+                if(idEnEditionCodeMateriel === row.codMat) {
+                    return (
+                        <div className="d-flex align-items-center gap-2" style={{ width:'100%'}}>
+                            <Form.Control
+                                size ="sm"
+                                type="text"
+                                autoFocus
+                                value={intituleEnEditionCodeMateriel}
+                                onChange={(e) => setIntituleEnEditionCodeMateriel(e.target.value)}
+                            />
+                            <Button size="sm" variant="secondary" onClick={annulerEditionCodeMateriel}>✕</Button>
+                        </div>
+                    );
+                }
                 return <span>{row.intituleMateriel}</span>
             }
         },
@@ -370,6 +453,17 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                         />
                     );
                 }
+                if(idEnEditionCodeMateriel === row.codMat) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="number"
+                            min={1}
+                            value={dureeVieEnEditionCodeMateriel}
+                            onChange={(e) => setDureeVieEnEditionCodeMateriel(Number(e.target.value))}
+                        />
+                    )
+                }
                 return <span>{row.dureeVieAn}</span>
             }
         },
@@ -386,7 +480,15 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
             }
         }
     ]
-
+    const conditionalRowStylesCodeMateriel = [
+        {
+            when: (row:any) => row.codMat === ligneDeCodeMaterielSelectionnee?.codMat,
+            style: {
+                backgroundColor: 'blue',
+                color: 'white'
+            }
+        }
+    ]
     const customStyles = {
         headRow: {
             style : {
@@ -443,7 +545,7 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                                 variant="danger"
                                 className="me-2"
                                 title="Supprimer"
-                                onClick={handleSupprimerCodeBudgetaire}
+                                onClick={handleSupprimer}
                                 disabled={!ligneDeCodeBudgetaireSelectionnee.codBud}
                             >
                                 <DeleteIcon/>
@@ -543,8 +645,19 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
                                 fixedHeader
                                 fixedHeaderScrollHeight="200px"
                                 noDataComponent="Aucune donnée"
-                                onRowClicked={() => {
-                                    setSectionCibleePourAjout('codeMateriel')
+                                conditionalRowStyles={conditionalRowStylesCodeMateriel}
+                                onRowClicked={(data:any) => {
+                                    if(enModeAjoutCodeMateriel) return;
+                                    setSectionCibleePourAjout('codeMateriel');
+                                    setLigneDeCodeMaterielSelectionnee(data);
+                                    setIdEnEditionCodeMateriel(data.codMat);
+                                    setIntituleEnEditionCodeMateriel(data.intituleMateriel);
+                                    setDureeVieEnEditionCodeMateriel(data.dureeVieAn);
+                                }}
+                                onRowDoubleClicked={() => {
+                                    setLigneDeCodeMaterielSelectionnee(null);
+                                    setIdEnEditionCodeMateriel(null);
+                                    setIntituleEnEditionCodeMateriel('');
                                 }}
                             />
                         </div>
