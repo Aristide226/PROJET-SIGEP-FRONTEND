@@ -7,7 +7,6 @@ import DataTable from "react-data-table-component";
 import { CodeBudgTypeResponseDto } from "../models/code-Budg-Type";
 import CodeBudgTypeService from "../services/code-Budg-Type-service";
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveSharpIcon from '@mui/icons-material/SaveSharp';
 import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
@@ -84,7 +83,7 @@ const ParametresSaisieMiseAjourNomenclatureBudgetaireForm =()=> {
             ]
         }
         return filtrerCodeBudgetairesEnFonctionDeCodTyp;
-    },[enModeAjoutCodeBudgetaire,filtrerCodeBudgetairesEnFonctionDeCodTyp])
+    },[enModeAjoutCodeBudgetaire,filtrerCodeBudgetairesEnFonctionDeCodTyp]);
 
     const filtrerEnFonctionDeCodBud = useMemo(() => {
         let resultat = allCodeMateriels;

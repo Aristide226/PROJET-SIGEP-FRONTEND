@@ -17,4 +17,6 @@ export const API_URLS = {
     PIECES_URL : BASE_URL + '/gim/pieces/',
     TYPE_ACQUISITION_URL : BASE_URL + '/gim/typeAcquisition/',
     CODE_MATERIEL_URL : BASE_URL + '/gim/codeMateriel/',
+    DIRECTIONS_URL : BASE_URL + '/gim/directions/',
+    SERVICE_URL : BASE_URL + '/gim/service/', 
 }

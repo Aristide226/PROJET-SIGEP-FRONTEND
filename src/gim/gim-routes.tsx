@@ -9,6 +9,7 @@ import ParametresSaisieMiseAjourFournisseursOuDonateurs from "./pages/parametres
 import ParametresSaisieMiseAjourMagasinsOuEntrepots from "./pages/parametres-saisie-mise-a-jour-magasins-ou-entrepots";
 import ParametresSaisieMiseAjourParametresGenereaux from "./pages/parametres-saisie-mise-a-jour-parametres-genereaux";
 import ParametresSaisieMiseAjourNomenclatureBudgetaire from "./pages/parametres-saisie-mise-a-jour-nomenclature-budgetaire";
+import ParametresSaisieMiseAjourStructuresAdministratives from "./pages/parametres-saisie-mise-a-jour-structures-administratives";
 
 
 const GimRoutes = () => {
@@ -22,8 +23,9 @@ const GimRoutes = () => {
                     <Route path="parametres-parametres-systemes" element= {<ParametresParametresSystemes/>}/>
                     <Route path="parametres-saisie-mise-a-jour-fournisseurs-ou-donateurs" element={<ParametresSaisieMiseAjourFournisseursOuDonateurs/>}/>
                     <Route path="paremetres-saisie-mise-a-jour-magasins-ou-entrepots" element={<ParametresSaisieMiseAjourMagasinsOuEntrepots/>}/>
-                    <Route path="paremetres-saisie-mise-a-jour-parametres-genereaux" element={<ParametresSaisieMiseAjourParametresGenereaux/>}/>
                     <Route path="paremetres-saisie-mise-a-jour-nomenclature-budgetaire" element={<ParametresSaisieMiseAjourNomenclatureBudgetaire/>}/>
+                    <Route path="paremetres-saisie-mise-a-jour-parametres-genereaux" element={<ParametresSaisieMiseAjourParametresGenereaux/>}/>
+                    <Route path="paremetres-saisie-mise-a-jour-structures-administratives" element={<ParametresSaisieMiseAjourStructuresAdministratives/>}/>
                 </Route> 
 
                 <Route path="*" element={<PageNotFound />} />           

@@ -20,7 +20,7 @@ const GimV : FunctionComponent<IAppProps> =()=> {
                             <NavDropdown.Item href="/gim/paremetres-saisie-mise-a-jour-magasins-ou-entrepots" className='navbar-link'>Magasins ou entrepôts</NavDropdown.Item>
                             <NavDropdown.Item href="/gim/paremetres-saisie-mise-a-jour-nomenclature-budgetaire" className='navbar-link'>Nomenclature Budgétaire</NavDropdown.Item>
                             <NavDropdown.Item href="/gim/paremetres-saisie-mise-a-jour-parametres-genereaux" className='navbar-link'>Paramètres généraux</NavDropdown.Item>
-                            <NavDropdown.Item href="#" className='navbar-link'>structures Administratives</NavDropdown.Item>
+                            <NavDropdown.Item href="/gim/paremetres-saisie-mise-a-jour-structures-administratives" className='navbar-link'>structures Administratives</NavDropdown.Item>
                             <NavDropdown.Item href="#" className='navbar-link'>Structures Territoriales</NavDropdown.Item>
                             <NavDropdown.Item href="#" className='navbar-link'>Site</NavDropdown.Item>
                         </NavDropdown>
