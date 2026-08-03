@@ -265,9 +265,7 @@ const ContratsPlanDePassationElaborerLeProjetDePpmForm : FunctionComponent =()=>
             ...prev,
             ...newField
           }));
-        }
-
-       
+        }  
       }
 
       const acteEnCours = ppmActe.find(item => item.valide === false);

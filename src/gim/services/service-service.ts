@@ -29,7 +29,7 @@ export default class ServiceService {
         .then( response => response.data);
     }
 
-    static getMaxNumByCodBud(codDirect: number) {
+    static findMaxCodServByCodDirect(codDirect: number) {
         return axios.get(API_URLS.SERVICE_URL + 'findMaxCodServByCodDirect/' + codDirect)
         .then(response => response.data)
     }
