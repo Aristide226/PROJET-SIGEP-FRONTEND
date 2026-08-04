@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { DirectionsRequestDto, DirectionsResponseDto, emptyDirectionsRequestDto, emptyDirectionsResponseDto } from "../models/directions";
-import { ServiceResponseDto } from "../models/service";
+import { emptyServiceResponseDto, ServiceResponseDto } from "../models/service";
 import DirectionsService from "../services/directions-services";
 import ServiceService from "../services/service-service";
 import DataTable from "react-data-table-component";
@@ -11,8 +11,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveSharpIcon from '@mui/icons-material/SaveSharp';
 import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
-import { Field } from "../../helpers/types";
-import { okSuccessDialog } from "../../helpers/dialogs";
+import { okSuccessDialog, okWarnignDialog } from "../../helpers/dialogs";
+import Swal from "sweetalert2";
 
 type FormulaireDirection = {
     codeDir:any,
@@ -34,19 +34,19 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
         nomDirection:{value: ''},
         abrev: {value: ''}
     })
+    const[ajouterServiceRatacheForm,setAjouterServiceRatacheForm] = useState<FormulaireService> ({
+        nomService: {value: ''},
+        abrevService: {value: ''},
+        codDirect: {value: ''}
+    })
     const ID_NOUVELLE_LIGNE_CODE_DIR = 'NOUVELLE_LIGNE_CODE_DIR';
     const[enModeAjoutDirection,setEnModeAjoutDirection] = useState<boolean>(false);
-    const[enModeModificationDirection,setEnModeModificationDirection] = useState<boolean>(false);
+    const[enModeAjoutService,setEnModeAjoutService] = useState<boolean>(false);
     const[sectionCibleePourAjout,setSectionCibleePourAjout] = useState<'direction'|'service'>('direction');
     const[ligneDirectionSelectionnee,setLigneDirectionSelectionnee] = useState<DirectionsResponseDto>(emptyDirectionsResponseDto);
+    const[ligneServiceRatacheSelectionnee,setLigneServiceRatacheSelectionnee] = useState<ServiceResponseDto>(emptyServiceResponseDto);
 
     //////////FONCTIONS//////////
-    const handleInputChangeDirection =(e:any)=> {
-        const fieldName: string = e.target.name;
-        const fieldValue: string = e.target.value;
-        const newField : Field = {[fieldName]: {value: fieldValue}, error:'', isValid:true};
-        setAjouterDirectionForm({...ajouterDirectionForm, ...newField})
-    }
     const initsetAjouterDirectionForm =()=> {
         setAjouterDirectionForm({
             codeDir: {value: ''},
@@ -57,11 +57,34 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
     const donneesFinalaAfficherPourDirection = useMemo(() => {
         if(enModeAjoutDirection) {
             return [
-                {codeDir : ID_NOUVELLE_LIGNE_CODE_DIR, nomDirection: '', abrev : '', codDirect:''}
+                {codeDir : ID_NOUVELLE_LIGNE_CODE_DIR, nomDirection: '', abrev : '', codDirect:''},
+                ...allDirections
             ]
         }
         return allDirections;
     },[enModeAjoutDirection,allDirections])
+    const filtrerEtAfficherServiceRataches = useMemo(() => {
+        let resultat = allServicesRataches;
+        if(ligneDirectionSelectionnee) {
+            resultat = resultat.filter((item:any) => item.codDirect === ligneDirectionSelectionnee.codDirect);
+        }
+        return resultat;
+    },[allServicesRataches,ligneDirectionSelectionnee])
+    const donneesFinalaAfficherPourServicesRataches =useMemo(() => {
+        if(enModeAjoutService) {
+            return [
+                {
+                    codServ : "",
+                    nomService : "",
+                    abrevService : "",
+                    idService : "", 
+                    codDirect : ""
+                },
+                ...filtrerEtAfficherServiceRataches
+            ]
+        }
+        return filtrerEtAfficherServiceRataches
+    },[enModeAjoutService,filtrerEtAfficherServiceRataches])
 
     const handleAjouterUneDirection =async()=> {
         setEnModeAjoutDirection(true);
@@ -82,14 +105,74 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                     nomDirection:{value: ''},
                     abrev: {value: ''}
                 })
+                setEnModeAjoutDirection(false)
+            })
+        }
+        if(enModeAjoutDirection === false) {
+            if(!ligneDirectionSelectionnee) {
+                okWarnignDialog("Veuillez d'abord choisir une ligne");
+                return;
+            }
+            const data : DirectionsRequestDto = emptyDirectionsRequestDto;
+            data.codeDir = ajouterDirectionForm.codeDir.value;
+            data.nomDirection = ajouterDirectionForm.nomDirection.value;
+            data.abrev = ajouterDirectionForm.abrev.value;
+            await DirectionsService.edit(ligneDirectionSelectionnee.codDirect,data)
+            .then((data) => {
+                okSuccessDialog("Données enrégistrées avec succès");
+                getAllDirections();
             })
         }
     }
     const handleAnnulerAjoutDirection =()=> {
         setEnModeAjoutDirection(false);
+        setAjouterDirectionForm({
+            codeDir: {value: ''},
+            nomDirection:{value: ''},
+            abrev: {value: ''}
+        })
+    }
+    const handleAnnulerEditionDirection =()=> {
+        setLigneDirectionSelectionnee(emptyDirectionsResponseDto);
+        setAjouterDirectionForm({
+            codeDir: {value: ""},
+            nomDirection:{value: ""},
+            abrev: {value: ""}
+        })
+    }
+    const handleSupprimerDirection =async()=> {
+        if(!ligneDirectionSelectionnee) return;
+        Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Vous ne pourrez plus revenir en arrière",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor : "#3085d6",
+            cancelButtonColor : "#d33",
+            confirmButtonText : "Oui, supprimer",
+            cancelButtonText: "Annuler"
+        }).then(async(result) => {
+            if(result.isConfirmed) {
+                await DirectionsService.delete(ligneDirectionSelectionnee.codDirect)
+                .then(() => {
+                    okSuccessDialog("Données supprimées avec succès")
+                    setLigneDirectionSelectionnee(emptyDirectionsResponseDto);
+                    getAllDirections()
+                })
+            }
+        })
     }
     const handleAjouterUnService =async()=> {
 
+    }
+    const handleSupprimerService =async()=> {
+
+    }
+    const handleSupprimer =async()=> {
+        if(sectionCibleePourAjout === 'service') {
+            return handleSupprimerService();
+        }
+        handleSupprimerDirection();
     }
 
     //////////APPELS SERVICES//////////
@@ -212,7 +295,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                             display: 'block'
                         }}
                     >
-                        {row.nomDirection}
+                        {row.abrev}
                     </span>
                 )
             }
@@ -235,6 +318,18 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
         }
     ]
 
+    const conditionalRowStylesDirection = [
+        {
+            when : (row:any) => row.codeDir === ligneDirectionSelectionnee.codeDir,
+            style: {
+                backgroundColor : 'blue',
+                color : 'white',
+                '&hover' : {
+                    cursor: 'pointer'
+                }
+            }
+        }
+    ]
     const customStyles = {
         headRow: {
             style : {
@@ -281,6 +376,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                                 className="me-2"
                                 title="Ajouter"
                                 onClick={sectionCibleePourAjout === 'direction' ? handleAjouterUneDirection : handleAjouterUnService}
+                                // disabled={ligneDirectionSelectionnee.codDirect}
                             >
                                 <AddIcon/>
                             </Button>
@@ -288,7 +384,8 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                                 variant="danger"
                                 className="me-2"
                                 title="Supprimer"
-
+                                onClick={handleSupprimer}
+                                disabled={!ligneDirectionSelectionnee.codDirect}
                             >
                                 <DeleteIcon/>
                             </Button>
@@ -310,6 +407,9 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                             {enModeAjoutDirection && (
                                 <Button variant="link" className="ms-2 text-muted" onClick={handleAnnulerAjoutDirection}><strong>Annuler</strong></Button>
                             )}
+                            {enModeAjoutDirection === false && ligneDirectionSelectionnee.codDirect && (
+                                <Button variant="link" className="ms-2 text-muted" onClick={handleAnnulerEditionDirection}><strong>Annuler</strong></Button>
+                            )}
                         </Col>
                     </Row>
                 </Card.Header>
@@ -321,9 +421,11 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                             data={donneesFinalaAfficherPourDirection}
                             fixedHeader
                             customStyles={customStyles}
+                            conditionalRowStyles={conditionalRowStylesDirection}
                             fixedHeaderScrollHeight="250px"
                             noDataComponent="Aucune donnée"
                             highlightOnHover
+                            pointerOnHover
                             onRowClicked={(data) => {
                                 if(enModeAjoutDirection) return;
                                 setSectionCibleePourAjout('direction')
@@ -336,18 +438,38 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                             }}
                             onRowDoubleClicked={(data) => {
                                 setLigneDirectionSelectionnee(emptyDirectionsResponseDto)
+                                setAjouterDirectionForm({
+                                    codeDir: {value: ""},
+                                    nomDirection:{value: ""},
+                                    abrev: {value: ""}
+                                })
                             }}
                         />
                     </div>
-                    <div>
+                    <div
+                        onClick={() => {
+                            if(!ligneDirectionSelectionnee.codeDir){
+                                okWarnignDialog("Veuillez d'abord sélectionner une direction");
+                                return;
+                            }
+                            setSectionCibleePourAjout('service')
+                        }}
+                        style={{cursor:'pointer'}}
+                    >
                         <span><b>Services ratachés</b></span>
                         <DataTable
                             columns={servicesRatachesColomn}
-                            data={allServicesRataches}
+                            data={donneesFinalaAfficherPourServicesRataches}
                             fixedHeader
                             customStyles={customStyles}
                             fixedHeaderScrollHeight="200px"
                             noDataComponent="Aucune donnée"
+                            highlightOnHover
+                            pointerOnHover
+                            onRowClicked={(data) => {
+                                setSectionCibleePourAjout('service')
+                                setLigneServiceRatacheSelectionnee(data)
+                            }}
                         />
                     </div>
                 </Card.Body>
