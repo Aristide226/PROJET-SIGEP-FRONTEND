@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { DirectionsRequestDto, DirectionsResponseDto, emptyDirectionsRequestDto, emptyDirectionsResponseDto } from "../models/directions";
-import { emptyServiceResponseDto, ServiceResponseDto } from "../models/service";
+import { emptyServiceRequestDto, emptyServiceResponseDto, ServiceRequestDto, ServiceResponseDto } from "../models/service";
 import DirectionsService from "../services/directions-services";
 import ServiceService from "../services/service-service";
 import DataTable from "react-data-table-component";
@@ -13,6 +13,7 @@ import SaveSharpIcon from '@mui/icons-material/SaveSharp';
 import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
 import { okSuccessDialog, okWarnignDialog } from "../../helpers/dialogs";
 import Swal from "sweetalert2";
+import { style } from "@mui/system";
 
 type FormulaireDirection = {
     codeDir:any,
@@ -40,6 +41,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
         codDirect: {value: ''}
     })
     const ID_NOUVELLE_LIGNE_CODE_DIR = 'NOUVELLE_LIGNE_CODE_DIR';
+    const ID_NOUVELLE_LIGNE_service_RATACHES = 455577416781254554455545252;
     const[enModeAjoutDirection,setEnModeAjoutDirection] = useState<boolean>(false);
     const[enModeAjoutService,setEnModeAjoutService] = useState<boolean>(false);
     const[sectionCibleePourAjout,setSectionCibleePourAjout] = useState<'direction'|'service'>('direction');
@@ -47,11 +49,18 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
     const[ligneServiceRatacheSelectionnee,setLigneServiceRatacheSelectionnee] = useState<ServiceResponseDto>(emptyServiceResponseDto);
 
     //////////FONCTIONS//////////
-    const initsetAjouterDirectionForm =()=> {
+    const initDirectionForm =()=> {
         setAjouterDirectionForm({
             codeDir: {value: ''},
             nomDirection:{value: ''},
             abrev: {value: ''}
+        })
+    }
+    const initServiceRatacheForm =()=> {
+        setAjouterServiceRatacheForm({
+            nomService: {value: ''},
+            abrevService: {value: ''},
+            codDirect: {value: ''}
         })
     }
     const donneesFinalaAfficherPourDirection = useMemo(() => {
@@ -74,7 +83,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
         if(enModeAjoutService) {
             return [
                 {
-                    codServ : "",
+                    codServ : ID_NOUVELLE_LIGNE_service_RATACHES,
                     nomService : "",
                     abrevService : "",
                     idService : "", 
@@ -96,17 +105,16 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
             data.codeDir = ajouterDirectionForm.codeDir.value;
             data.nomDirection = ajouterDirectionForm.nomDirection.value;
             data.abrev = ajouterDirectionForm.abrev.value;
-            await DirectionsService.add(data)
-            .then((data) => {
-                okSuccessDialog('Données enregistrées avec succès')
-                getAllDirections()
-                setAjouterDirectionForm({
-                    codeDir: {value: ''},
-                    nomDirection:{value: ''},
-                    abrev: {value: ''}
-                })
-                setEnModeAjoutDirection(false)
-            })
+            try{
+                await DirectionsService.add(data);
+                okSuccessDialog('Données enregistrées avec succès');
+                getAllDirections();
+                initDirectionForm();
+                setEnModeAjoutDirection(false);
+            }
+            catch(error) {
+                okWarnignDialog("Une erreur est survenue lors de l'enrégistrment");
+            }
         }
         if(enModeAjoutDirection === false) {
             if(!ligneDirectionSelectionnee) {
@@ -117,28 +125,24 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
             data.codeDir = ajouterDirectionForm.codeDir.value;
             data.nomDirection = ajouterDirectionForm.nomDirection.value;
             data.abrev = ajouterDirectionForm.abrev.value;
-            await DirectionsService.edit(ligneDirectionSelectionnee.codDirect,data)
-            .then((data) => {
+            try {
+                await DirectionsService.edit(ligneDirectionSelectionnee.codDirect,data)
                 okSuccessDialog("Données enrégistrées avec succès");
                 getAllDirections();
-            })
+                initDirectionForm();
+            }
+            catch(error) {
+                okWarnignDialog("Une erreur est survenue lors de l'enrégistrment");
+            }
         }
     }
     const handleAnnulerAjoutDirection =()=> {
         setEnModeAjoutDirection(false);
-        setAjouterDirectionForm({
-            codeDir: {value: ''},
-            nomDirection:{value: ''},
-            abrev: {value: ''}
-        })
+        initDirectionForm();
     }
     const handleAnnulerEditionDirection =()=> {
         setLigneDirectionSelectionnee(emptyDirectionsResponseDto);
-        setAjouterDirectionForm({
-            codeDir: {value: ""},
-            nomDirection:{value: ""},
-            abrev: {value: ""}
-        })
+        initDirectionForm();
     }
     const handleSupprimerDirection =async()=> {
         if(!ligneDirectionSelectionnee) return;
@@ -153,20 +157,86 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
             cancelButtonText: "Annuler"
         }).then(async(result) => {
             if(result.isConfirmed) {
-                await DirectionsService.delete(ligneDirectionSelectionnee.codDirect)
-                .then(() => {
-                    okSuccessDialog("Données supprimées avec succès")
+                try{
+                    await DirectionsService.delete(ligneDirectionSelectionnee.codDirect);
+                    okSuccessDialog("Données supprimées avec succès");
                     setLigneDirectionSelectionnee(emptyDirectionsResponseDto);
-                    getAllDirections()
-                })
+                    getAllDirections();
+                } catch(error){
+                    okWarnignDialog("Une erreur est survenue lors de la suppression");
+                }
             }
         })
     }
     const handleAjouterUnService =async()=> {
-
+        setEnModeAjoutService(true)
+    }
+    const handleAnnulerAjoutService =async()=> {
+        setEnModeAjoutService(false)
+        initServiceRatacheForm();
+    }
+    const handleAnnulerEditionService =async()=> {
+        setLigneServiceRatacheSelectionnee(emptyServiceResponseDto);
+        initServiceRatacheForm();
+    }
+    const handleEnregistrerUnService =async()=> {
+        if(enModeAjoutService === true) {
+            const data : ServiceRequestDto = emptyServiceRequestDto;
+            data.nomService = ajouterServiceRatacheForm.nomService.value;
+            data.abrevService = ajouterServiceRatacheForm.abrevService.value;
+            data.codDirect = ligneDirectionSelectionnee.codDirect;
+            try{
+                await ServiceService.add(data);
+                okSuccessDialog('Données enregistrées avec succès');
+                getAllServicesRataches();
+                initServiceRatacheForm();
+                setEnModeAjoutService(false)
+            }catch(erreur){
+                okWarnignDialog("Une erreur est survenue lors de l'enrégistrment");
+            }
+        }
+        if(enModeAjoutService === false) {
+            const data : ServiceRequestDto = emptyServiceRequestDto;
+            data.nomService = ajouterServiceRatacheForm.nomService.value;
+            data.abrevService = ajouterServiceRatacheForm.abrevService.value;
+            data.codDirect = ligneDirectionSelectionnee.codDirect;
+            try{
+                await ServiceService.edit(ligneServiceRatacheSelectionnee.idService,data);
+                okSuccessDialog('Données enregistrées avec succès');
+                getAllServicesRataches();
+                initServiceRatacheForm();
+            }catch(erreur){
+                okWarnignDialog("Une erreur est survenue lors de l'enrégistrment");
+            }
+        }
     }
     const handleSupprimerService =async()=> {
-
+        if(!ligneServiceRatacheSelectionnee) return;
+        Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Vous ne pourrez plus revenir en arrière",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor : "#3085d6",
+            cancelButtonColor : "#d33",
+            confirmButtonText : "Oui, supprimer",
+            cancelButtonText: "Annuler"
+        }).then(async(result) => {
+            try{
+                await ServiceService.delete(ligneServiceRatacheSelectionnee.idService);
+                okSuccessDialog("Données supprimées avec succès");
+                setLigneServiceRatacheSelectionnee(emptyServiceResponseDto);
+                getAllServicesRataches();
+            }catch(erreur) {
+                okWarnignDialog("Erreur lors de la suppression");
+            }
+        })
+    }
+    const handleEnregistrer =async()=> {
+        if(sectionCibleePourAjout === 'service'){
+            return handleEnregistrerUnService();
+        }
+        handleEnregistrerUneDirection();
     }
     const handleSupprimer =async()=> {
         if(sectionCibleePourAjout === 'service') {
@@ -306,15 +376,103 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
         {
             name: 'Rang',
             width: '10%',
-            selector: (row:any) => row.codServ
+            selector: (row:any) => row.codServ,
+            cell:(row:any) => {
+                if(row.codServ === ID_NOUVELLE_LIGNE_service_RATACHES) {
+                    return (
+                        <span></span>
+                    )
+                }
+                return (
+                    <span>{row.codServ}</span>
+                )
+            }
         },
         {
             name: 'Nom service',
-            selector: (row:any) => row.nomService
+            selector: (row:any) => row.nomService,
+            cell: (row:any) => {
+                if(row.codServ === ID_NOUVELLE_LIGNE_service_RATACHES) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={ajouterServiceRatacheForm.nomService.value}
+                            onChange={(e) => setAjouterServiceRatacheForm({...ajouterServiceRatacheForm, nomService : {value:e.target.value}})}
+                        />
+                    )
+                }
+                if(ligneServiceRatacheSelectionnee.idService === row.idService) {
+                    return (
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={ajouterServiceRatacheForm.nomService.value}
+                            onChange={(e) => setAjouterServiceRatacheForm({...ajouterServiceRatacheForm, nomService : {value:e.target.value}})}
+                        />
+                    )
+                }
+                return (
+                    <span 
+                    style={{
+                        cursor: enModeAjoutService ? 'not-allowed' : 'text',
+                        opacity: enModeAjoutService ? 0.5 : 1,
+                        width: '100%',
+                        display: 'block'
+                    }}
+                    >
+                    {row.nomService}
+                    </span>
+                )
+            } 
         },
         {
             name: 'Abréviation',
-            selector: (row:any) => row.abrevService
+            selector: (row:any) => row.abrevService,
+            cell:(row:any) => {
+                if(row.codServ === ID_NOUVELLE_LIGNE_service_RATACHES) {
+                    return (
+                        <div className="d-flex align-items gap-2" style={{width:'100%'}}>
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={ajouterServiceRatacheForm.abrevService.value}
+                            onChange={(e) => setAjouterServiceRatacheForm({...ajouterServiceRatacheForm, abrevService:{value:e.target.value}})}
+                        />
+                        <Button size="sm" variant="secondary" onClick={handleAnnulerAjoutService} title="Annuler l'ajout du service">✕</Button> 
+                        </div>
+                    )
+                }
+                if(ligneServiceRatacheSelectionnee.idService === row.idService) {
+                    return (
+                        <div className="d-flex align-items gap-2" style={{width:'100%'}}>
+                        <Form.Control
+                            size="sm"
+                            type="text"
+                            autoFocus
+                            value={ajouterServiceRatacheForm.abrevService.value}
+                            onChange={(e) => setAjouterServiceRatacheForm({...ajouterServiceRatacheForm, abrevService:{value:e.target.value}})}
+                        />
+                        <Button size="sm" variant="secondary" onClick={handleAnnulerEditionService} title="Annuler l'édition du service">✕</Button> 
+                        </div>
+                    )
+                }
+                return (
+                    <span 
+                    style={{
+                        cursor: enModeAjoutService ? 'not-allowed' : 'text',
+                        opacity: enModeAjoutService ? 0.5 : 1,
+                        width: '100%',
+                        display: 'block'
+                    }}
+                    >
+                    {row.abrevService}
+                    </span>
+                )
+            }
         }
     ]
 
@@ -326,6 +484,18 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                 color : 'white',
                 '&hover' : {
                     cursor: 'pointer'
+                }
+            }
+        }
+    ]
+    const conditionalRowStylesService = [
+        {
+            when: (row:any) => row.idService === ligneServiceRatacheSelectionnee.idService,
+            style: {
+                backgroundColor : 'blue',
+                color : 'white',
+                '&hover' : {
+                    cursor:'pointer'
                 }
             }
         }
@@ -393,7 +563,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                                 variant="primary"
                                 className="me-2"
                                 title="Enregistrer les données"
-                                onClick={handleEnregistrerUneDirection}
+                                onClick={handleEnregistrer}
                             >
                                 <SaveSharpIcon/>
                             </Button>
@@ -437,12 +607,8 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                                 })
                             }}
                             onRowDoubleClicked={(data) => {
-                                setLigneDirectionSelectionnee(emptyDirectionsResponseDto)
-                                setAjouterDirectionForm({
-                                    codeDir: {value: ""},
-                                    nomDirection:{value: ""},
-                                    abrev: {value: ""}
-                                })
+                                setLigneDirectionSelectionnee(emptyDirectionsResponseDto);
+                                initDirectionForm();
                             }}
                         />
                     </div>
@@ -462,6 +628,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                             data={donneesFinalaAfficherPourServicesRataches}
                             fixedHeader
                             customStyles={customStyles}
+                            conditionalRowStyles={conditionalRowStylesService}
                             fixedHeaderScrollHeight="200px"
                             noDataComponent="Aucune donnée"
                             highlightOnHover
@@ -469,6 +636,15 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                             onRowClicked={(data) => {
                                 setSectionCibleePourAjout('service')
                                 setLigneServiceRatacheSelectionnee(data)
+                                setAjouterServiceRatacheForm({
+                                    nomService: {value: data.nomService},
+                                    abrevService: {value: data.nomService},
+                                    codDirect: {value: data.codDirect}
+                                })
+                            }}
+                            onRowDoubleClicked={(data) => {
+                                setLigneServiceRatacheSelectionnee(emptyServiceResponseDto);
+                                initServiceRatacheForm();
                             }}
                         />
                     </div>
