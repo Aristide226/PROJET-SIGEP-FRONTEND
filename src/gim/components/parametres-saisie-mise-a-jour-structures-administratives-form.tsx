@@ -638,7 +638,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
                                 setLigneServiceRatacheSelectionnee(data)
                                 setAjouterServiceRatacheForm({
                                     nomService: {value: data.nomService},
-                                    abrevService: {value: data.nomService},
+                                    abrevService: {value: data.abrevService},
                                     codDirect: {value: data.codDirect}
                                 })
                             }}
