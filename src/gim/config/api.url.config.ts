@@ -19,4 +19,5 @@ export const API_URLS = {
     CODE_MATERIEL_URL : BASE_URL + '/gim/codeMateriel/',
     DIRECTIONS_URL : BASE_URL + '/gim/directions/',
     SERVICE_URL : BASE_URL + '/gim/service/', 
+    REGION_URL : BASE_URL + '/gim/region/',
 }
