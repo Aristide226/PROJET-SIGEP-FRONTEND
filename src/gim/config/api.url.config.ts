@@ -20,4 +20,6 @@ export const API_URLS = {
     DIRECTIONS_URL : BASE_URL + '/gim/directions/',
     SERVICE_URL : BASE_URL + '/gim/service/', 
     REGION_URL : BASE_URL + '/gim/region/',
+    PROVINCE_URL : BASE_URL + '/gim/province/',
+    DEPARTEMENT_URL : BASE_URL + '/gim/departement/',
 }
