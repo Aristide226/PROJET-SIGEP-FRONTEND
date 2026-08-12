@@ -13,7 +13,6 @@ import SaveSharpIcon from '@mui/icons-material/SaveSharp';
 import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
 import { okSuccessDialog, okWarnignDialog } from "../../helpers/dialogs";
 import Swal from "sweetalert2";
-import { style } from "@mui/system";
 
 type FormulaireDirection = {
     codeDir:any,
@@ -250,14 +249,12 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
         await DirectionsService.getAll()
         .then((data) => {
             setAllDirections(data);
-            console.table(data)
         })
     }
     const getAllServicesRataches =async()=> {
         await ServiceService.getAll()
         .then((data) => {
             setAllServicesRataches(data);
-            console.table(data)
         })
     }
 
@@ -511,7 +508,7 @@ const ParametresSaisieMiseAjourStructuresAdministrativesForm =()=> {
         headCells: {
             style: {
                 color: '#1f3864',
-                fontWeighr: 'bold',
+                fontWeigh: 'bold',
                 fontSize: '14px',
             },
         },
