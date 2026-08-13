@@ -23,8 +23,6 @@ const ParametresSaisieMiseAjourStructuresTerritorialesForm =()=> {
         await RegionService.getAll()
         .then((data) => {
             setAllRegions(data)
-            console.log("données regions")
-            console.table(data)
         })
         
     }
@@ -85,8 +83,6 @@ const ParametresSaisieMiseAjourStructuresTerritorialesForm =()=> {
         await DepartementService.getAll()
         .then((data) => {
             setAllDepartements(data)
-            console.log("données departements")
-            console.table(data)
         })
     }
 
