@@ -11,6 +11,7 @@ import ParametresSaisieMiseAjourParametresGenereaux from "./pages/parametres-sai
 import ParametresSaisieMiseAjourNomenclatureBudgetaire from "./pages/parametres-saisie-mise-a-jour-nomenclature-budgetaire";
 import ParametresSaisieMiseAjourStructuresAdministratives from "./pages/parametres-saisie-mise-a-jour-structures-administratives";
 import ParametresSaisieMiseAjourStructuresTerritoriales from "./pages/parametres-saisie-mise-a-jour-structures-territoriales";
+import ParametresSaisieMiseAjourSite from "./pages/parametres-saisie-mise-a-jour-site";
 
 
 const GimRoutes = () => {
@@ -23,11 +24,12 @@ const GimRoutes = () => {
                     {/* Les autres routes sans grh*/}
                     <Route path="parametres-parametres-systemes" element= {<ParametresParametresSystemes/>}/>
                     <Route path="parametres-saisie-mise-a-jour-fournisseurs-ou-donateurs" element={<ParametresSaisieMiseAjourFournisseursOuDonateurs/>}/>
-                    <Route path="paremetres-saisie-mise-a-jour-magasins-ou-entrepots" element={<ParametresSaisieMiseAjourMagasinsOuEntrepots/>}/>
-                    <Route path="paremetres-saisie-mise-a-jour-nomenclature-budgetaire" element={<ParametresSaisieMiseAjourNomenclatureBudgetaire/>}/>
-                    <Route path="paremetres-saisie-mise-a-jour-parametres-genereaux" element={<ParametresSaisieMiseAjourParametresGenereaux/>}/>
-                    <Route path="paremetres-saisie-mise-a-jour-structures-administratives" element={<ParametresSaisieMiseAjourStructuresAdministratives/>}/>
-                    <Route path="paremetres-saisie-mise-a-jour-structures-territoriales" element={<ParametresSaisieMiseAjourStructuresTerritoriales/>}/>
+                    <Route path="parametres-saisie-mise-a-jour-magasins-ou-entrepots" element={<ParametresSaisieMiseAjourMagasinsOuEntrepots/>}/>
+                    <Route path="parametres-saisie-mise-a-jour-nomenclature-budgetaire" element={<ParametresSaisieMiseAjourNomenclatureBudgetaire/>}/>
+                    <Route path="parametres-saisie-mise-a-jour-parametres-genereaux" element={<ParametresSaisieMiseAjourParametresGenereaux/>}/>
+                    <Route path="parametres-saisie-mise-a-jour-structures-administratives" element={<ParametresSaisieMiseAjourStructuresAdministratives/>}/>
+                    <Route path="parametres-saisie-mise-a-jour-structures-territoriales" element={<ParametresSaisieMiseAjourStructuresTerritoriales/>}/>
+                    <Route path="parametres-saisie-mise-a-jour-site" element={<ParametresSaisieMiseAjourSite/>}/>
                 </Route> 
 
                 <Route path="*" element={<PageNotFound />} />           
