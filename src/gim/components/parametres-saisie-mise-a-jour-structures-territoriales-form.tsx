@@ -108,6 +108,9 @@ const ParametresSaisieMiseAjourStructuresTerritorialesForm =()=> {
 
     const filtrerProvinceEnFonctionDeRegion = useMemo(() => {
         let resultat = allProvinces;
+        if(!ligneRegionSelectionnee) {
+            resultat = resultat
+        }
         if(ligneRegionSelectionnee) {
             resultat = resultat.filter((item:any) => item.codReg === ligneRegionSelectionnee.codReg)
         } 
