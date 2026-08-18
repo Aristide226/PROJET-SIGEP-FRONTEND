@@ -12,7 +12,10 @@ const ParametresSaisieMiseAjourSiteForm =()=> {
 
                 </Card.Header>
                 <Card.Body>
+                    <div>
+                        <h6>Critère de recherche</h6>
 
+                    </div>
                 </Card.Body>
                 <Card.Footer>
                     
